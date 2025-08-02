@@ -310,3 +310,244 @@ a:hover {
     color: #ffc107;
     text-shadow: 0 0 3px rgba(255, 193, 7, 0.5);
 }
+
+/* Impressive Monitor Dashboard Styles */
+.health-summary {
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    border: none;
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card .display-4 {
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Monitor Card - Product Container */
+.monitor-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border: 3px solid #e9ecef;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.monitor-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.product-health-indicator {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.health-score {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* Environment Row Layout */
+.environments-row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.environment-column {
+    flex: 1;
+    min-width: 300px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.environment-column:hover {
+    border-color: #007bff;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.environment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.env-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.env-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* Microservices Flow Layout */
+.microservices-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.service-pill {
+    background: linear-gradient(145deg, #ffffff 0%, #f1f3f4 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.service-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.service-indicator {
+    font-size: 0.8rem;
+}
+
+.service-label {
+    color: #495057;
+    white-space: nowrap;
+}
+
+/* Database Indicators */
+.database-indicators {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.db-section {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+/* Auto-scroll Indicator */
+.auto-scroll-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (min-width: 1400px) {
+    .product-title {
+        font-size: 2.5rem;
+    }
+    
+    .env-name {
+        font-size: 1.6rem;
+    }
+    
+    .summary-card {
+        padding: 2.5rem 2rem;
+    }
+    
+    .environment-column {
+        min-width: 350px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .product-title {
+        font-size: 3rem;
+    }
+    
+    .env-name {
+        font-size: 1.8rem;
+    }
+    
+    .summary-card {
+        padding: 3rem 2.5rem;
+    }
+    
+    .service-pill {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Animation for health status changes */
+.service-indicator, .env-status .fa-circle {
+    animation: pulse-health 2s infinite;
+}
+
+@keyframes pulse-health {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Smooth transitions for everything */
+.preview-mode * {
+    transition: all 0.3s ease;
+}
+
+/* Hide scrollbars for cleaner look */
+.preview-mode {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.preview-mode::-webkit-scrollbar {
+    display: none;
+}
