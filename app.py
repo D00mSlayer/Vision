@@ -1,12 +1,11 @@
+"""
+Vision App - Main Application Module
+Infrastructure monitoring and health check application
+"""
+
 import os
-import yaml
 import logging
-import requests
-import psycopg2
-from flask import Flask, render_template, jsonify
-from urllib.parse import urlparse
-import threading
-import time
+from flask import Flask
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -19,122 +18,8 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key_change_in_prod
 app.jinja_env.variable_start_string = '{['
 app.jinja_env.variable_end_string = ']}'
 
-# Global variable to store environment data and health status
-environment_data = {}
-health_status = {}
-
-def load_environment_data():
-    """Load environment data from YAML file"""
-    global environment_data
-    try:
-        with open('data/environments.yaml', 'r') as file:
-            environment_data = yaml.safe_load(file)
-        app.logger.info("Environment data loaded successfully")
-    except Exception as e:
-        app.logger.error(f"Error loading environment data: {e}")
-        environment_data = {"product_versions": []}
-
-def check_url_health(url):
-    """Check if a URL is reachable"""
-    try:
-        response = requests.get(url, timeout=5)
-        return response.status_code == 200
-    except:
-        return False
-
-def check_database_health(host, port, database_name, username, password):
-    """Check if a PostgreSQL database is accessible"""
-    try:
-        # Attempt to connect to the database
-        connection = psycopg2.connect(
-            host=host,
-            port=port,
-            database=database_name,
-            user=username,
-            password=password,
-            connect_timeout=5
-        )
-        # Execute a simple query to verify the connection
-        cursor = connection.cursor()
-        cursor.execute("SELECT 1")
-        cursor.fetchone()
-        cursor.close()
-        connection.close()
-        return True
-    except Exception as e:
-        app.logger.debug(f"Database health check failed for {host}:{port}/{database_name}: {e}")
-        return False
-
-def update_health_status():
-    """Update health status for all URLs and databases"""
-    global health_status
-    
-    if not environment_data:
-        return
-    
-    for product in environment_data.get('product_versions', []):
-        for env in product.get('environments', []):
-            env_url = env.get('url')
-            if env_url:
-                health_key = f"env_{env_url}"
-                health_status[health_key] = check_url_health(env_url)
-            
-            for microservice in env.get('microservices', []):
-                ms_url = microservice.get('server_url')
-                if ms_url:
-                    health_key = f"ms_{ms_url}"
-                    health_status[health_key] = check_url_health(ms_url)
-            
-            for database in env.get('databases', []):
-                if all(key in database for key in ['host', 'port', 'database_name', 'username', 'password']):
-                    db_identifier = f"{database['host']}:{database['port']}/{database['database_name']}"
-                    health_key = f"db_{db_identifier}"
-                    health_status[health_key] = check_database_health(
-                        database['host'],
-                        database['port'],
-                        database['database_name'],
-                        database['username'],
-                        database['password']
-                    )
-
-def health_check_worker():
-    """Background worker to continuously update health status"""
-    while True:
-        update_health_status()
-        time.sleep(30)  # Check every 30 seconds
-
-@app.route('/')
-def index():
-    """Main page route"""
-    return render_template('index.html')
-
-@app.route('/api/environments')
-def get_environments():
-    """API endpoint to get environment data"""
-    return jsonify(environment_data)
-
-@app.route('/api/health')
-def get_health_status():
-    """API endpoint to get health status"""
-    return jsonify(health_status)
-
-@app.route('/api/health/check')
-def trigger_health_check():
-    """API endpoint to trigger immediate health check"""
-    update_health_status()
-    return jsonify({"status": "updated", "health": health_status})
-
-# Initialize data when the app starts
-def initialize_app():
-    load_environment_data()
-    # Start health check worker in background thread
-    health_thread = threading.Thread(target=health_check_worker, daemon=True)
-    health_thread.start()
-    # Initial health check
-    update_health_status()
-
-# Initialize the app immediately
-initialize_app()
+# Import routes after app creation to avoid circular imports
+import routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

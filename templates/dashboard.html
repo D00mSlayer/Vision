@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="visionApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision - Environment Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="[{ url_for('static', filename='css/styles.css') }]">
+</head>
+<body ng-controller="MainController">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-eye me-2"></i>Vision - Environment Dashboard
+            </span>
+            
+            <!-- Health Summary -->
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item">
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-server me-1"></i>
+                        Environments: <span ng-class="getHealthClass('environments')">[{ healthStats.environments.up }]/[{ healthStats.environments.total }]</span>
+                    </span>
+                </div>
+                <div class="nav-item">
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-microchip me-1"></i>
+                        Services: <span ng-class="getHealthClass('microservices')">[{ healthStats.microservices.up }]/[{ healthStats.microservices.total }]</span>
+                    </span>
+                </div>
+                <div class="nav-item">
+                    <span class="navbar-text me-3">
+                        <i class="fas fa-database me-1"></i>
+                        Databases: <span ng-class="getHealthClass('databases')">[{ healthStats.databases.up }]/[{ healthStats.databases.total }]</span>
+                    </span>
+                </div>
+                <div class="nav-item">
+                    <a href="/monitor" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-tv me-1"></i>Monitor View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <!-- Loading State -->
+        <div ng-if="!environmentData" class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading environment data...</span>
+            </div>
+            <p class="mt-2">Loading environment data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div ng-if="error" class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Error Loading Data</h4>
+            <p>[{ error }]</p>
+        </div>
+
+        <!-- Environment Data -->
+        <div ng-if="environmentData && !error">
+            <div ng-repeat="product in environmentData.product_versions" class="mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-cube me-2"></i>[{ product.product_name }]
+                            <span class="badge bg-light text-dark ms-2">[{ product.environments.length }] environments</span>
+                        </h3>
+                    </div>
+                    
+                    <div class="card-body p-0">
+                        <div class="accordion" id="accordion[{ $index }]">
+                            <div ng-repeat="env in product.environments" class="accordion-item">
+                                <h2 class="accordion-header" id="heading[{ $parent.$index }][{ $index }]">
+                                    <button class="accordion-button" type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse[{ $parent.$index }][{ $index }]"
+                                            aria-expanded="true" 
+                                            aria-controls="collapse[{ $parent.$index }][{ $index }]">
+                                        
+                                        <div class="d-flex align-items-center w-100">
+                                            <div class="me-3">
+                                                <i class="fas fa-circle" ng-class="getHealthClass('env_' + env.url)"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <strong>[{ env.name }]</strong>
+                                                <small class="text-muted ms-2">[{ env.url }]</small>
+                                            </div>
+                                            <div class="me-3">
+                                                <span class="badge bg-secondary">[{ env.git_branch }]</span>
+                                                <span class="badge bg-info text-dark">[{ env.git_tag }]</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                
+                                <div id="collapse[{ $parent.$index }][{ $index }]" 
+                                     class="accordion-collapse collapse show"
+                                     aria-labelledby="heading[{ $parent.$index }][{ $index }]"
+                                     data-bs-parent="#accordion[{ $parent.$index }]">
+                                    
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <!-- Microservices -->
+                                            <div class="col-md-6 mb-3" ng-if="env.microservices && env.microservices.length > 0">
+                                                <h5><i class="fas fa-microchip me-2"></i>Microservices</h5>
+                                                <div class="list-group">
+                                                    <div ng-repeat="service in env.microservices" class="list-group-item">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="fas fa-circle me-2" ng-class="getHealthClass('ms_' + service.server_url)"></i>
+                                                                <strong>[{ service.name_of_service }]</strong>
+                                                                <small class="text-muted d-block">[{ service.server_url }]</small>
+                                                            </div>
+                                                            <div>
+                                                                <span class="badge bg-secondary me-1">[{ service.git_branch }]</span>
+                                                                <span class="badge bg-info text-dark">[{ service.git_tag }]</span>
+                                                                <span class="badge bg-warning text-dark">:[{ service.port }]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Databases -->
+                                            <div class="col-md-6 mb-3" ng-if="env.databases && env.databases.length > 0">
+                                                <h5><i class="fas fa-database me-2"></i>Databases</h5>
+                                                <div class="list-group">
+                                                    <div ng-repeat="db in env.databases" class="list-group-item">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="fas fa-circle me-2" ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
+                                                                <strong>[{ db.database_name }]</strong>
+                                                                <small class="text-muted d-block">[{ db.host }]:[{ db.port }]</small>
+                                                            </div>
+                                                            <div>
+                                                                <span class="badge" ng-class="db.type === 'primary' ? 'bg-success' : 'bg-secondary'">[{ db.type }]</span>
+                                                                <span class="badge bg-info text-dark">[{ db.username }]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Additional Info -->
+                                        <div class="row mt-3" ng-if="env.splunk">
+                                            <div class="col-12">
+                                                <h6><i class="fas fa-chart-line me-2"></i>Logging & Monitoring</h6>
+                                                <div class="bg-light p-2 rounded">
+                                                    <small>
+                                                        <strong>Splunk Index:</strong> [{ env.splunk.index }] | 
+                                                        <strong>Source Type:</strong> [{ env.splunk.sourcetype }]
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="[{ url_for('static', filename='js/dashboard.js') }]"></script>
+</body>
+</html>
