@@ -2,7 +2,8 @@ import os
 import yaml
 import logging
 import requests
-import psycopg2
+import pyodbc
+import pymssql
 from flask import Flask, render_template, jsonify
 from urllib.parse import urlparse
 import threading
@@ -43,18 +44,51 @@ def check_url_health(url):
         return False
 
 def check_database_health(host, port, database_name, username, password):
-    """Check if a PostgreSQL database is accessible"""
+    """Check if a MS SQL database is accessible using pyodbc or pymssql"""
+    
+    # First try pyodbc with available drivers
     try:
-        # Attempt to connect to the database
-        connection = psycopg2.connect(
-            host=host,
-            port=port,
-            database=database_name,
+        drivers = [
+            "ODBC Driver 18 for SQL Server",
+            "ODBC Driver 17 for SQL Server", 
+            "FreeTDS",
+            "SQL Server"
+        ]
+        
+        for driver in drivers:
+            try:
+                connection_string = (
+                    f"DRIVER={{{driver}}};"
+                    f"SERVER={host},{port};"
+                    f"DATABASE={database_name};"
+                    f"UID={username};"
+                    f"PWD={password};"
+                    f"TrustServerCertificate=yes;"
+                    f"Connection Timeout=5;"
+                )
+                connection = pyodbc.connect(connection_string)
+                cursor = connection.cursor()
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+                cursor.close()
+                connection.close()
+                return True
+            except pyodbc.Error:
+                continue
+    except Exception:
+        pass
+    
+    # Fallback to pymssql
+    try:
+        connection = pymssql.connect(
+            server=host,
             user=username,
             password=password,
-            connect_timeout=5
+            database=database_name,
+            port=port,
+            timeout=5,
+            login_timeout=5
         )
-        # Execute a simple query to verify the connection
         cursor = connection.cursor()
         cursor.execute("SELECT 1")
         cursor.fetchone()
@@ -62,7 +96,7 @@ def check_database_health(host, port, database_name, username, password):
         connection.close()
         return True
     except Exception as e:
-        app.logger.debug(f"Database health check failed for {host}:{port}/{database_name}: {e}")
+        app.logger.debug(f"MS SQL database health check failed for {host}:{port}/{database_name}: {e}")
         return False
 
 def update_health_status():

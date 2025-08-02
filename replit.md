@@ -34,11 +34,12 @@ Preferred communication style: Simple, everyday language.
 
 **Health Monitoring System**
 - Automated URL health checking with 5-second timeouts
-- PostgreSQL database connectivity monitoring with connection pooling
+- MS SQL Server database connectivity monitoring with dual-driver support (pyodbc + pymssql fallback)
 - Background thread for continuous health status updates (30-second intervals)
-- HTTP status code validation (200 = healthy) and database query validation
-- Real-time health indicator updates in both detailed and monitor views
+- HTTP status code validation (200 = healthy) and MS SQL database query validation
+- Real-time health indicator updates in both detailed and monitor views with enhanced vibrant colors
 - Comprehensive health statistics including environments, microservices, and databases
+- Enhanced visibility with bright neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) and glow effects
 
 **Error Handling and Logging**
 - Comprehensive logging configuration with DEBUG level
@@ -57,7 +58,8 @@ Preferred communication style: Simple, everyday language.
 - Flask - Web framework for API endpoints and template rendering
 - PyYAML - YAML file parsing and data loading
 - Requests - HTTP client for health check functionality
-- psycopg2-binary - PostgreSQL database adapter for database health monitoring
+- pyodbc - Primary MS SQL Server ODBC driver for database health monitoring
+- pymssql - Fallback MS SQL Server driver for database connectivity
 
 **Development Tools**
 - Python logging module for application monitoring
