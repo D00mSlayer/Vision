@@ -84,15 +84,17 @@ def trigger_health_check():
     update_health_status()
     return jsonify({"status": "updated", "health": health_status})
 
-# Initialize data and start background health checks
-if __name__ == '__main__':
+# Initialize data when the app starts
+def initialize_app():
     load_environment_data()
-    
     # Start health check worker in background thread
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    
     # Initial health check
     update_health_status()
-    
+
+# Initialize the app immediately
+initialize_app()
+
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

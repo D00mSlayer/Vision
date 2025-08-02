@@ -26,11 +26,11 @@
             </span>
             <div class="d-flex align-items-center">
                 <span class="badge bg-light text-dark me-2">
-                    <i class="fas fa-clock me-1"></i>Last Updated: {{ lastUpdated | date:'medium' }}
+                    <i class="fas fa-clock me-1"></i>Last Updated: <span ng-bind="lastUpdated | date:'medium'"></span>
                 </span>
                 <button class="btn btn-outline-light btn-sm" ng-click="refreshHealth()" ng-disabled="refreshing">
                     <i class="fas fa-sync-alt" ng-class="{'fa-spin': refreshing}"></i>
-                    {{ refreshing ? 'Refreshing...' : 'Refresh' }}
+                    <span ng-bind="refreshing ? 'Refreshing...' : 'Refresh'"></span>
                 </button>
             </div>
         </div>
@@ -48,7 +48,7 @@
         <!-- Error State -->
         <div ng-if="error" class="alert alert-danger" role="alert">
             <i class="fas fa-exclamation-triangle me-2"></i>
-            Error loading environment data: {{ error }}
+            Error loading environment data: <span ng-bind="error"></span>
         </div>
 
         <!-- Main Content -->
@@ -58,18 +58,19 @@
                 <div class="card">
                     <div class="card-header bg-secondary text-white">
                         <h3 class="card-title mb-0">
-                            <i class="fas fa-cube me-2"></i>{{ product.name }}
+                            <i class="fas fa-cube me-2"></i><span ng-bind="product.name"></span>
                         </h3>
                     </div>
                     
                     <!-- Environments Accordion -->
                     <div class="card-body p-0">
-                        <div class="accordion" id="accordion-{{ $parent.$index }}">
+{% raw %}
+                        <div class="accordion" ng-attr-id="{{'accordion-' + $parent.$index}}">
                             <div ng-repeat="environment in product.environments" class="accordion-item">
-                                <h2 class="accordion-header" id="heading-{{ $parent.$index }}-{{ $index }}">
+                                <h2 class="accordion-header" ng-attr-id="{{'heading-' + $parent.$index + '-' + $index}}">
                                     <button class="accordion-button collapsed" type="button" 
                                             data-bs-toggle="collapse" 
-                                            data-bs-target="#collapse-{{ $parent.$index }}-{{ $index }}"
+                                            ng-attr-data-bs-target="{{'#collapse-' + $parent.$index + '-' + $index}}"
                                             aria-expanded="false">
                                         <div class="d-flex align-items-center w-100">
                                             <i class="fas fa-server me-2"></i>
@@ -82,9 +83,9 @@
                                         </div>
                                     </button>
                                 </h2>
-                                <div id="collapse-{{ $parent.$index }}-{{ $index }}" 
+                                <div ng-attr-id="{{'collapse-' + $parent.$index + '-' + $index}}" 
                                      class="accordion-collapse collapse"
-                                     data-bs-parent="#accordion-{{ $parent.$index }}">
+                                     ng-attr-data-bs-parent="{{'#accordion-' + $parent.$index}}">
                                     <div class="accordion-body">
                                         
                                         <!-- Environment Details -->
@@ -96,7 +97,7 @@
                                                         <h6 class="card-title">
                                                             <i class="fas fa-globe me-2"></i>Environment URL
                                                         </h6>
-                                                        <a href="{{ environment.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                        <a ng-href="{{ environment.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                                             {{ environment.url }}
                                                             <i class="fas fa-external-link-alt ms-1"></i>
                                                         </a>
@@ -183,7 +184,7 @@
                                                             <div class="small">
                                                                 <div>
                                                                     <strong>URL:</strong> 
-                                                                    <a href="{{ ms.server_url }}" target="_blank" class="btn btn-outline-success btn-xs">
+                                                                    <a ng-href="{{ ms.server_url }}" target="_blank" class="btn btn-outline-success btn-xs">
                                                                         {{ ms.server_url }}
                                                                         <i class="fas fa-external-link-alt ms-1"></i>
                                                                     </a>
@@ -203,6 +204,7 @@
                                                 </div>
                                             </div>
                                         </div>
+{% endraw %}
                                     </div>
                                 </div>
                             </div>
