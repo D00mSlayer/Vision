@@ -1,0 +1,166 @@
+/* Vision App Custom Styles */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styles */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Card Styles */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Accordion Styles */
+.accordion-button {
+    background-color: #ffffff;
+    border: none;
+    font-weight: 500;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #e7f3ff;
+    color: #0056b3;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Health Indicator Styles */
+.health-indicator {
+    font-size: 0.9rem;
+}
+
+.health-up {
+    color: #28a745;
+}
+
+.health-down {
+    color: #dc3545;
+}
+
+.health-checking {
+    color: #ffc107;
+}
+
+/* Button Styles */
+.btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.8em;
+}
+
+/* Environment Cards */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Database and Microservice Cards */
+.card.border-primary {
+    border-color: #0d6efd !important;
+}
+
+.card.border-success {
+    border-color: #198754 !important;
+}
+
+/* Loading and Error States */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .accordion-button {
+        font-size: 0.9rem;
+    }
+    
+    .health-indicator {
+        font-size: 0.8rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Animation for health status changes */
+.health-indicator i {
+    transition: color 0.3s ease;
+}
+
+/* Custom scrollbar for long content */
+.accordion-body {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Code-like styling for technical details */
+.small {
+    font-family: 'Courier New', Courier, monospace;
+    line-height: 1.4;
+}
+
+/* Link styling */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Status indicators pulsing animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.health-checking i {
+    animation: pulse 1.5s infinite;
+}
+
+/* Environment type styling */
+.card-header.bg-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+}
+
+/* Highlight active accordion sections */
+.accordion-item:hover .accordion-button {
+    background-color: #f0f8ff;
+}
+
+/* Better spacing for mobile */
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .accordion-button {
+        padding: 0.75rem;
+    }
+    
+    .accordion-body {
+        padding: 1rem;
+    }
+}

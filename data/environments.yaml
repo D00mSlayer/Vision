@@ -1,0 +1,149 @@
+# Vision App - Environment Information Data
+product_versions:
+  - name: "Product A v1.0"
+    environments:
+      - name: "Development"
+        url: "https://dev.producta.com"
+        git_branch: "develop"
+        git_tag: "v1.0.0-dev"
+        splunk:
+          index: "product_a_dev_index"
+          sourcetype: "product_a_dev_logs"
+        databases:
+          - type: "primary"
+            host: "192.168.1.10"
+            port: 5432
+            database_name: "product_a_dev_db"
+            username: "devuser"
+            password: "devpassword"
+          - type: "secondary"
+            host: "db-replica.producta.com"
+            port: 5432
+            database_name: "product_a_dev_db_replica"
+            username: "devuser_ro"
+            password: "devpassword_ro"
+        microservices:
+          - name_of_service: "UserAuthService"
+            server_url: "https://auth.dev.producta.com"
+            port: 8080
+            git_branch: "feature/auth-v2"
+            git_tag: "auth-v2.1"
+          - name_of_service: "OrderProcessingService"
+            server_url: "https://orders.dev.producta.com"
+            port: 8081
+            git_branch: "develop"
+            git_tag: "v1.2.3"
+      - name: "Staging"
+        url: "https://stg.producta.com"
+        git_branch: "release/v1.0"
+        git_tag: "v1.0.0-rc1"
+        splunk:
+          index: "product_a_stg_index"
+          sourcetype: "product_a_stg_logs"
+        databases:
+          - type: "primary"
+            host: "192.168.2.10"
+            port: 5432
+            database_name: "product_a_stg_db"
+            username: "stguser"
+            password: "stgpassword"
+        microservices:
+          - name_of_service: "UserAuthService"
+            server_url: "https://auth.stg.producta.com"
+            port: 8080
+            git_branch: "release/v1.0"
+            git_tag: "auth-v1.0"
+          - name_of_service: "OrderProcessingService"
+            server_url: "https://orders.stg.producta.com"
+            port: 8081
+            git_branch: "release/v1.0"
+            git_tag: "v1.0.0"
+      - name: "Production"
+        url: "https://producta.com"
+        git_branch: "main"
+        git_tag: "v1.0.0"
+        splunk:
+          index: "product_a_prod_index"
+          sourcetype: "product_a_prod_logs"
+        databases:
+          - type: "primary"
+            host: "prod-db.producta.com"
+            port: 5432
+            database_name: "product_a_prod_db"
+            username: "produser"
+            password: "prodpassword"
+          - type: "replica"
+            host: "prod-db-replica.producta.com"
+            port: 5432
+            database_name: "product_a_prod_db"
+            username: "produser_ro"
+            password: "prodpassword_ro"
+        microservices:
+          - name_of_service: "UserAuthService"
+            server_url: "https://auth.producta.com"
+            port: 8080
+            git_branch: "main"
+            git_tag: "auth-v1.0.0"
+          - name_of_service: "OrderProcessingService"
+            server_url: "https://orders.producta.com"
+            port: 8081
+            git_branch: "main"
+            git_tag: "v1.0.0"
+  - name: "Product B v2.0"
+    environments:
+      - name: "Development"
+        url: "https://dev.productb.com"
+        git_branch: "develop"
+        git_tag: "v2.0.0-dev"
+        splunk:
+          index: "product_b_dev_index"
+          sourcetype: "product_b_dev_logs"
+        databases:
+          - type: "primary"
+            host: "192.168.1.20"
+            port: 3306
+            database_name: "product_b_dev_db"
+            username: "devuser"
+            password: "devpassword"
+        microservices:
+          - name_of_service: "PaymentService"
+            server_url: "https://payments.dev.productb.com"
+            port: 8082
+            git_branch: "develop"
+            git_tag: "payment-v2.0"
+          - name_of_service: "NotificationService"
+            server_url: "https://notifications.dev.productb.com"
+            port: 8083
+            git_branch: "develop"
+            git_tag: "notify-v1.5"
+      - name: "Production"
+        url: "https://productb.com"
+        git_branch: "main"
+        git_tag: "v2.0.0"
+        splunk:
+          index: "product_b_prod_index"
+          sourcetype: "product_b_prod_logs"
+        databases:
+          - type: "primary"
+            host: "prod-db.productb.com"
+            port: 3306
+            database_name: "product_b_prod_db"
+            username: "produser"
+            password: "prodpassword"
+          - type: "analytics"
+            host: "analytics-db.productb.com"
+            port: 3306
+            database_name: "product_b_analytics"
+            username: "analytics_user"
+            password: "analytics_password"
+        microservices:
+          - name_of_service: "PaymentService"
+            server_url: "https://payments.productb.com"
+            port: 8082
+            git_branch: "main"
+            git_tag: "payment-v2.0.0"
+          - name_of_service: "NotificationService"
+            server_url: "https://notifications.productb.com"
+            port: 8083
+            git_branch: "main"
+            git_tag: "notify-v1.5.0"
