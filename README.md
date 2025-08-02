@@ -10,10 +10,11 @@ Vision is an internal web application that provides a centralized dashboard for 
 git clone <your-repo-url>
 cd vision-dashboard
 
-# 2. Set custom port (optional, default is 5000)
-export PORT=5099
+# 2. Run with custom port (easy way)
+PORT=5099 ./run-docker.sh
 
-# 3. Run with Docker
+# OR manually:
+export PORT=5099
 docker compose up -d
 
 # Application will be available at http://localhost:5099
@@ -114,6 +115,19 @@ gunicorn --bind 0.0.0.0:5099 --workers 1 main:app
 ### Missing Dependencies
 ```bash
 pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
+```
+
+### Docker App Not Loading
+If your Docker container is running but app won't load:
+```bash
+# Stop the current container
+docker compose down
+
+# Set the port you want (like 5099) and restart
+PORT=5099 docker compose up -d
+
+# OR use the simple script
+PORT=5099 ./run-docker.sh
 ```
 
 ### Configuration Not Updating
