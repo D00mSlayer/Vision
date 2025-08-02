@@ -1,151 +1,63 @@
 # Vision - Environment Information Dashboard
 
-Vision is an internal web application designed for developers to provide a centralized source of truth for environment-related information. The application serves as a dashboard that displays product environments, their health status, database configurations, and other critical infrastructure details.
+Vision is an internal web application that provides a centralized dashboard for monitoring product environments, health status, database configurations, and microservices. Perfect for development teams and executive displays.
 
-## 🚀 Quick Start with Docker (Company Deployment)
+## 🚀 Quick Start - Choose Your Method
 
-The easiest way to run Vision on your company servers is using Docker Compose:
-
+### Method 1: Docker (Recommended for Company Servers)
 ```bash
-# Clone and navigate to the project
+# 1. Clone the project
 git clone <your-repo-url>
 cd vision-dashboard
 
-# One-command deployment
-./deploy.sh
+# 2. Set custom port (optional, default is 5000)
+export PORT=5099
 
-# Or manually with Docker Compose
+# 3. Run with Docker
 docker compose up -d
 
-# The application will be available at http://localhost:5000
+# Application will be available at http://localhost:5099
 ```
 
-That's it! The application will automatically:
-- Install all dependencies
-- Start the Flask server
-- Begin health monitoring
-- Serve the web interface
+### Method 2: Direct Python (Simple Setup)
+```bash
+# 1. Clone the project
+git clone <your-repo-url>
+cd vision-dashboard
 
-**Note**: Docker setup is designed for company server deployment. For Replit development, the application runs directly with the Flask server.
+# 2. Install dependencies
+pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
 
-## 📋 Table of Contents
+# 3. Set custom port (optional)
+export PORT=5099
 
-- [Features](#features)
-- [Architecture](#architecture)
-- [Installation Methods](#installation-methods)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Health Monitoring](#health-monitoring)
-- [Development](#development)
-- [Troubleshooting](#troubleshooting)
+# 4. Set session secret
+export SESSION_SECRET="your-secure-32-character-key"
 
-## ✨ Features
+# 5. Run the application
+gunicorn --bind 0.0.0.0:$PORT --workers 1 main:app
+```
 
-### 🎯 Core Features
-- **Centralized Environment Information**: Single source of truth for all product environments
-- **Real-time Health Monitoring**: Automatic health checks for URLs, microservices, and MS SQL databases
-- **Dual Display Modes**: 
-  - Detailed interactive view for developers
-  - Monitor-friendly display with auto-scrolling for floor displays
-- **MS SQL Server Support**: Native connectivity with dual-driver support (pyodbc + pymssql)
+## 🔧 Live Configuration Updates
+
+Your `data/environments.yaml` file is mounted for live updates:
+
+**Docker Setup**: Changes to `data/environments.yaml` reflect immediately with browser refresh
+**Direct Python**: Changes reflect immediately with browser refresh
+
+No restart needed - just refresh your browser!
+
+## 📋 What You Get
+
+- **Real-time Health Monitoring**: Automatic health checks for URLs and MS SQL databases
+- **Dual Display Modes**: Detailed view for developers + Monitor view for floor displays
+- **Live Configuration**: Edit `data/environments.yaml` and refresh browser to see changes
 - **Executive Dashboard**: High-level statistics and visual health indicators
-
-### 🎨 Visual Features
-- **Enhanced Health Indicators**: Vibrant, distinguishable colors for easy status identification
-- **Responsive Design**: Works on desktop, tablet, and large monitors
-- **Auto-scrolling Interface**: Perfect for large displays showing 20+ microservices
-- **Real-time Updates**: Health status updates every 30 seconds
-
-## 🏗 Architecture
-
-### Frontend
-- **AngularJS 1.8.2**: Single-page application with main controller pattern
-- **Bootstrap 5.3.0**: Responsive UI components and styling
-- **Font Awesome 6.4.0**: Comprehensive iconography
-
-### Backend
-- **Flask**: Python web framework with RESTful API design
-- **Real-time Health Monitoring**: Background threading with 30-second intervals
-- **YAML Configuration**: File-based environment data management
-
-### Database Support
-- **MS SQL Server**: Primary database platform
-- **Dual Driver Support**: 
-  - pyodbc with ODBC Driver 18 (preferred)
-  - pymssql as fallback
-- **Connection Pooling**: Optimized database connectivity
-
-### Health Monitoring
-- **URL Health Checks**: HTTP status validation with 5-second timeouts
-- **Database Connectivity**: MS SQL connection testing with query validation
-- **Microservice Monitoring**: Real-time status tracking
-- **Visual Indicators**: Bright neon colors (#00ff80 green, #ff1744 red, #ff9500 orange)
-
-## 🔧 Installation Methods
-
-### Method 1: Docker Compose (Recommended)
-
-1. **Prerequisites**: Docker and Docker Compose installed
-
-2. **Quick Start**:
-   ```bash
-   docker compose up -d
-   ```
-
-3. **Access**: Open http://localhost:5000
-
-### Method 2: Local Development (Replit/Direct Python)
-
-1. **Prerequisites**:
-   - Python 3.11+
-   - MS SQL Server ODBC drivers (optional, pymssql used as fallback)
-
-2. **Install Dependencies** (if not using Replit):
-   ```bash
-   pip install flask pyyaml requests pyodbc pymssql gunicorn
-   ```
-
-3. **Environment Setup**:
-   ```bash
-   export SESSION_SECRET="your-secure-secret-key"
-   ```
-
-4. **Run Application**:
-   ```bash
-   # For development (Replit environment)
-   gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
-   
-   # For production
-   gunicorn --bind 0.0.0.0:5000 --workers 2 main:app
-   ```
-
-### Method 3: Production Deployment
-
-1. **System Requirements**:
-   - Linux server (Ubuntu/CentOS/RHEL)
-   - Python 3.11+
-   - Nginx (recommended for reverse proxy)
-   - MS SQL Server ODBC drivers
-
-2. **Production Setup**:
-   ```bash
-   # Install system dependencies
-   apt-get update
-   apt-get install -y python3.11 python3-pip nginx
-
-   # Install Python dependencies
-   pip install -r requirements.txt
-
-   # Configure systemd service (see deployment section)
-   systemctl enable vision-dashboard
-   systemctl start vision-dashboard
-   ```
+- **Auto-scrolling**: Perfect for large displays showing 20+ microservices
 
 ## ⚙️ Configuration
 
-### Environment Data
-
-Edit `data/environments.yaml` to configure your environments:
+Edit `data/environments.yaml` to add your environments:
 
 ```yaml
 product_versions:
@@ -154,191 +66,76 @@ product_versions:
       - name: "Development"
         url: "https://dev.yourcompany.com"
         git_branch: "develop"
-        git_tag: "v1.0.0-dev"
         databases:
           - type: "primary"
-            host: "sqlserver.dev.yourcompany.com"
+            host: "sql-dev.yourcompany.com"
             port: 1433
             database_name: "yourapp_dev"
             username: "dev_user"
             password: "dev_password"
         microservices:
           - name_of_service: "AuthService"
-            server_url: "https://auth.dev.yourcompany.com"
+            server_url: "https://auth-dev.yourcompany.com"
             port: 8080
             git_branch: "develop"
-            git_tag: "auth-v1.0"
 ```
 
-### Environment Variables
+After editing, just refresh your browser - changes appear immediately!
 
-```bash
-# Required
-SESSION_SECRET="your-secure-secret-key-min-32-chars"
+## 🖥 Using the Dashboard
 
-# Optional - for custom configuration
-FLASK_ENV="production"
-FLASK_DEBUG="false"
-```
-
-### Health Check Configuration
-
-The application automatically monitors:
-- **Environment URLs**: Main application endpoints
-- **Microservice URLs**: Individual service health endpoints
-- **MS SQL Databases**: Connection and query validation
-
-Update intervals:
-- **Health Checks**: Every 30 seconds
-- **UI Updates**: Real-time via JavaScript polling
-
-## 🖥 Usage
-
-### Detailed View
+### Detailed View (Default)
 - Expandable sections for each environment
 - Complete database and microservice information
-- Git branch and tag details
-- Splunk configuration display
+- Perfect for developers and detailed monitoring
 
 ### Monitor View
-- Toggle with "Switch to Monitor View" button
-- Auto-scrolling for environments with 20+ microservices
-- Large, easily readable health indicators
-- Executive-level statistics dashboard
+- Click "Switch to Monitor View" button
+- Auto-scrolling for environments with many services
+- Large, visible health indicators
+- Perfect for floor displays and executive dashboards
 
 ### Health Status Colors
-- **🟢 Green (#00ff80)**: Service is healthy and responding
-- **🔴 Red (#ff1744)**: Service is offline or unreachable
-- **🟠 Orange (#ff9500)**: Service is being checked or in transition
-
-## 🏥 Health Monitoring
-
-### How It Works
-
-1. **Background Threading**: Health checks run continuously in separate threads
-2. **Database Connectivity**: 
-   - Attempts connection with configured credentials
-   - Executes `SELECT 1` query to verify functionality
-   - Supports both pyodbc and pymssql drivers
-3. **URL Monitoring**: 
-   - HTTP GET requests with 5-second timeout
-   - Validates 200 status code responses
-4. **Real-time Updates**: Status changes are immediately reflected in UI
-
-### Troubleshooting Health Checks
-
-#### Database Connection Issues
-```bash
-# Check database connectivity manually
-python -c "
-import pymssql
-conn = pymssql.connect(
-    server='your-server', 
-    user='username', 
-    password='password', 
-    database='database_name',
-    port=1433
-)
-print('Connection successful')
-conn.close()
-"
-```
-
-#### URL Monitoring Issues
-```bash
-# Test URL accessibility
-curl -I -m 5 https://your-environment-url.com
-```
-
-## 🔧 Development
-
-### Local Development Setup
-
-1. **Clone Repository**:
-   ```bash
-   git clone <repo-url>
-   cd vision-dashboard
-   ```
-
-2. **Virtual Environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   # or
-   venv\Scripts\activate     # Windows
-   ```
-
-3. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Development Server**:
-   ```bash
-   export FLASK_ENV=development
-   export FLASK_DEBUG=true
-   python main.py
-   ```
-
-### Project Structure
-```
-vision-dashboard/
-├── app.py                 # Main Flask application
-├── main.py               # Application entry point
-├── data/
-│   └── environments.yaml # Environment configuration
-├── static/
-│   ├── css/
-│   │   └── styles.css    # Custom styling
-│   └── js/
-│       └── app.js        # AngularJS application
-├── templates/
-│   └── index.html        # Main template
-├── docker-compose.yml    # Docker configuration
-├── Dockerfile           # Container definition
-├── requirements.txt     # Python dependencies
-└── README.md           # This file
-```
-
-### Adding New Environments
-
-1. Edit `data/environments.yaml`
-2. Add environment configuration following existing pattern
-3. Application automatically reloads configuration
-4. Health monitoring begins immediately
-
-### Customizing Health Checks
-
-Modify `app.py` functions:
-- `check_url_health()`: URL monitoring logic
-- `check_database_health()`: Database connectivity logic
-- `update_health_status()`: Health check orchestration
+- 🟢 **Green**: Service is healthy and responding
+- 🔴 **Red**: Service is offline or unreachable  
+- 🟠 **Orange**: Service is being checked
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
-#### 1. Application Won't Start
+### Port Already in Use
 ```bash
-# Check Python version
-python --version  # Should be 3.11+
-
-# Verify dependencies
-pip list
-
-# Check logs
-docker compose logs vision-app
+# Use a different port
+export PORT=5099
+docker compose up -d
+# OR
+gunicorn --bind 0.0.0.0:5099 --workers 1 main:app
 ```
 
-#### 2. Database Connection Failures
+### Missing Dependencies
 ```bash
-# Verify MS SQL Server accessibility
-telnet your-db-server 1433
+pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
+```
 
-# Check ODBC drivers
-odbcinst -q -d
+### Configuration Not Updating
+- For Docker: Changes to `data/environments.yaml` are mounted and appear immediately
+- For Direct Python: Changes appear immediately  
+- Just refresh your browser after editing the file
 
-# Test pymssql connectivity
+### Database Connection Issues
+- The app uses dual drivers (pyodbc + pymssql) for MS SQL
+- If one fails, it automatically tries the other
+- Check your database credentials in `data/environments.yaml`
+
+## 💡 Tips
+
+- Changes to `data/environments.yaml` appear immediately with browser refresh
+- Use Monitor View for impressive floor displays
+- Health checks run automatically every 30 seconds
+- Green = healthy, Red = offline, Orange = checking
+
+---
+
+**That's it! Vision Dashboard is ready to impress your team and management with real-time infrastructure monitoring.**
 python -c "import pymssql; print('pymssql available')"
 ```
 

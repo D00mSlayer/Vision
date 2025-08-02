@@ -11,8 +11,8 @@ services:
       - FLASK_ENV=production
       - FLASK_DEBUG=false
     volumes:
-      # Mount environment data as read-only
-      - ./data:/app/data:ro
+      # Mount environment data for live updates
+      - ./data:/app/data
       # Mount logs directory for persistence
       - ./logs:/app/logs
     restart: unless-stopped
