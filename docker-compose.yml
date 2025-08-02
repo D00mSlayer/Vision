@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  vision-app:
+    build: .
+    container_name: vision-dashboard
+    ports:
+      - "5000:5000"
+    environment:
+      - SESSION_SECRET=${SESSION_SECRET:-vision-secure-secret-key-change-in-production}
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+    volumes:
+      # Mount environment data as read-only
+      - ./data:/app/data:ro
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - vision-network
+
+networks:
+  vision-network:
+    driver: bridge
+
+# Optional: Add nginx reverse proxy
+# Uncomment the section below to include nginx
+#
+#  nginx:
+#    image: nginx:alpine
+#    container_name: vision-nginx
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./ssl:/etc/nginx/ssl:ro
+#    depends_on:
+#      - vision-app
+#    restart: unless-stopped
+#    networks:
+#      - vision-network
