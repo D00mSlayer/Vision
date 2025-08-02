@@ -1,0 +1,113 @@
+## 🤖 AI Agent Prompt: Build "Vision" App - Environment Information Page
+
+### **Project Goal**
+
+Build an internal web application named **"Vision"** for developers. The primary purpose of this application is to provide a centralized source of truth for all environment-related information, including URLs, Git links, Splunk details, database configurations, and microservice details.
+
+### **Technology Stack (Critical for Low Maintenance)**
+
+The application should be built using **Python for the backend/server-side logic (if any is needed beyond serving static files and handling health checks)** and **AngularJS for the frontend UI**. The goal is to achieve **little to no maintenance code**, favoring simplicity and directness over complex frameworks or designs.
+
+### **App Structure & Navigation**
+
+  * The app will **not** have a traditional home screen.
+  * It will consist of multiple sub-pages.
+  * For this initial phase, we will focus on building the **first sub-page: "Environment Information"**.
+  * Navigation between future sub-pages (e.g., Jenkins URLs, Jira Tickets) will be implemented later.
+
+### **Data Source**
+
+  * All data for the "Environment Information" sub-page will be pulled from a **hardcoded, nested YAML file** directly within the application's code. This YAML file will serve as the single source of data for this page.
+
+### **YAML Data Structure (Critical)**
+
+The YAML file must strictly adhere to the following nested structure:
+
+```yaml
+# Example YAML structure (replace with actual data later)
+product_versions:
+  - name: "Product A v1.0"
+    environments:
+      - name: "Development"
+        url: "https://dev.producta.com"
+        git_branch: "develop" # Optional
+        git_tag: "v1.0.0-dev" # Optional
+        splunk:
+          index: "product_a_dev_index"
+          sourcetype: "product_a_dev_logs"
+        databases:
+          - type: "primary"
+            host: "192.168.1.10"
+            port: 5432
+            database_name: "product_a_dev_db"
+            username: "devuser"
+            password: "devpassword"
+          - type: "secondary"
+            host: "db-replica.producta.com"
+            port: 5432
+            database_name: "product_a_dev_db_replica"
+            username: "devuser_ro"
+            password: "devpassword_ro"
+        microservices:
+          - name_of_service: "UserAuthService"
+            server_url: "https://auth.dev.producta.com"
+            port: 8080
+            git_branch: "feature/auth-v2" # Optional
+            git_tag: "auth-v2.1" # Optional
+          - name_of_service: "OrderProcessingService"
+            server_url: "https://orders.dev.producta.com"
+            port: 8081
+      - name: "Staging"
+        url: "https://stg.producta.com"
+        # ... similar structure for Staging environment
+  - name: "Product B v2.0"
+    environments:
+      - name: "Production"
+        url: "https://prod.productb.com"
+        # ... similar structure for Product B Production environment
+```
+
+**Key considerations for the YAML structure:**
+
+  * `product_versions` is a list of product versions.
+  * Each `product_version` has a `name` and a list of `environments`.
+  * Each `environment` has a `name`, `url`, `splunk` details, and lists of `databases` and `microservices`.
+  * `git_branch` and `git_tag` are optional fields for environments and microservices.
+  * `databases` and `microservices` are lists, allowing for multiple entries.
+
+### **"Environment Information" Sub-page Display Requirements**
+
+The "Environment Information" page should:
+
+1.  **Display Product Versions:** Clearly list each `product_version`.
+2.  **Expandable Environments:** Under each product version, list its `environment_name`s. Each environment should be an **expandable view** (e.g., an accordion or collapsible panel) implemented using AngularJS.
+3.  **Detailed Environment View:** When an environment is expanded, it should display all its associated details:
+      * `url` (clickable link)
+      * `git_branch` (if present, clickable link if it's a valid Git URL)
+      * `git_tag` (if present, clickable link if it's a valid Git URL)
+      * **Splunk:**
+          * `index`
+          * `sourcetype`
+      * **Databases:** List each database's `type`, `host`, `port`, `database_name`, `username`, and `password`.
+      * **Microservices:** List each microservice's `name_of_service`, `server_url` (clickable link), `port`, `git_branch` (if present, clickable link), and `git_tag` (if present, clickable link).
+
+### **User Interface (UI) & User Experience (UX)**
+
+  * The UI should be **clean and colorful**, appealing to developers.
+  * Utilize **expandable/collapsible components** (e.g., accordions, disclosure widgets) built with AngularJS to manage the display of detailed information, allowing users to "get more data as needed" without overwhelming the screen.
+  * Ensure all URLs and Git links are **clickable**.
+
+### **Functionality: Health Checks**
+
+Implement **real-time health checks** for:
+
+1.  **Each `environment_url`**: Display a clear visual indicator (e.g., green/red icon, "Up"/"Down" text) next to each environment URL.
+2.  **Each `microservice.server_url`**: Display a clear visual indicator (e.g., green/red icon, "Up"/"Down" text) next to each microservice URL.
+
+The health checks should ping the respective URLs and update their status dynamically. This functionality can be handled by a lightweight Python backend service that the AngularJS frontend queries, or directly from AngularJS if CORS policies allow and the checks are simple HTTP GETs. **Prioritize simplicity and low maintenance for the health check implementation.**
+
+### **Development Approach - Phase 1**
+
+  * Focus solely on building the "Environment Information" sub-page as described.
+  * The YAML data should be hardcoded initially for demonstration.
+  * Prioritize the display of data and the health check functionality using Python and AngularJS.
