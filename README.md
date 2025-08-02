@@ -119,15 +119,29 @@ pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
 
 ### Docker App Not Loading
 If your Docker container is running but app won't load:
+
+**Step 1: Debug the issue**
+```bash
+./debug-docker.sh
+```
+
+**Step 2: Fix the common issues**
 ```bash
 # Stop the current container
 docker compose down
 
-# Set the port you want (like 5099) and restart
+# Make sure PORT is set and restart
 PORT=5099 docker compose up -d
 
-# OR use the simple script
-PORT=5099 ./run-docker.sh
+# Check if it's working
+curl http://localhost:5099/api/health
+```
+
+**Step 3: If still not working, try rebuild**
+```bash
+docker compose down
+docker compose build --no-cache
+PORT=5099 docker compose up -d
 ```
 
 ### Configuration Not Updating
