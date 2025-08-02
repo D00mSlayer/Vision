@@ -14,6 +14,10 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key_change_in_production")
 
+# Configure Jinja2 to use different delimiters to avoid conflicts with AngularJS
+app.jinja_env.variable_start_string = '{['
+app.jinja_env.variable_end_string = ']}'
+
 # Global variable to store environment data and health status
 environment_data = {}
 health_status = {}
