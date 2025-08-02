@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ "{{" }} url_for('static', filename='css/styles.css') {{ "}}" }}">
+    <link rel="stylesheet" href="{[ url_for('static', filename='css/styles.css') ]}"
 </head>
 <body ng-controller="MonitorController" class="preview-mode">
     <!-- Full Screen Header -->
@@ -86,15 +86,15 @@
                                         <div class="env-status">
                                             <i class="fas fa-circle fa-2x me-3" ng-class="getHealthClass('env_' + env.url)"></i>
                                             <div>
-                                                <h4 class="mb-1">{{ "{{" }} env.name {{ "}}" }}</h4>
-                                                <small class="text-muted">{{ "{{" }} env.url {{ "}}" }}</small>
+                                                <h4 class="mb-1">{{ env.name }}</h4>
+                                                <small class="text-muted">{{ env.url }}</small>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="env-version text-center">
-                                            <span class="badge bg-secondary fs-6">{{ "{{" }} env.git_branch {{ "}}" }}</span>
-                                            <span class="badge bg-info text-dark fs-6">{{ "{{" }} env.git_tag {{ "}}" }}</span>
+                                            <span class="badge bg-secondary fs-6">{{ env.git_branch }}</span>
+                                            <span class="badge bg-info text-dark fs-6">{{ env.git_tag }}</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -104,7 +104,7 @@
                                                     <small class="text-muted">MICROSERVICES</small>
                                                     <div class="service-count">
                                                         <span ng-class="getServiceHealthClass(env.microservices)">
-                                                            {{ "{{" }} getHealthyCount(env.microservices, 'ms_') {{ "}}" }}/{{ "{{" }} env.microservices.length {{ "}}" }}
+                                                            {{ getHealthyCount(env.microservices, 'ms_') }}/{{ env.microservices.length }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -112,7 +112,7 @@
                                                     <small class="text-muted">DATABASES</small>
                                                     <div class="service-count">
                                                         <span ng-class="getDatabaseHealthClass(env.databases)">
-                                                            {{ "{{" }} getHealthyDbCount(env.databases) {{ "}}" }}/{{ "{{" }} env.databases.length {{ "}}" }}
+                                                            {{ getHealthyDbCount(env.databases) }}/{{ env.databases.length }}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -125,17 +125,17 @@
                                 <div class="services-grid" ng-if="env.microservices && env.microservices.length > 0">
                                     <div class="scrollable-services" 
                                          ng-class="{'auto-scroll': env.microservices.length >= 20}"
-                                         id="services-{{ "{{" }} $parent.$index {{ "}}" }}-{{ "{{" }} $index {{ "}}" }}">
+                                         id="services-{{ $parent.$index }}-{{ $index }}">
                                         
                                         <div class="service-items">
                                             <div ng-repeat="service in env.microservices" class="service-item">
                                                 <i class="fas fa-circle" ng-class="getHealthClass('ms_' + service.server_url)"></i>
                                                 <div class="service-info">
-                                                    <div class="service-name">{{ "{{" }} service.name_of_service {{ "}}" }}</div>
-                                                    <div class="service-url">{{ "{{" }} service.server_url {{ "}}" }}</div>
+                                                    <div class="service-name">{{ service.name_of_service }}</div>
+                                                    <div class="service-url">{{ service.server_url }}</div>
                                                     <div class="service-meta">
-                                                        <span class="badge bg-secondary">{{ "{{" }} service.git_branch {{ "}}" }}</span>
-                                                        <span class="badge bg-info text-dark">{{ "{{" }} service.git_tag {{ "}}" }}</span>
+                                                        <span class="badge bg-secondary">{{ service.git_branch }}</span>
+                                                        <span class="badge bg-info text-dark">{{ service.git_tag }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -149,10 +149,10 @@
                                         <div ng-repeat="db in env.databases" class="database-item">
                                             <i class="fas fa-circle" ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
                                             <div class="database-info">
-                                                <div class="database-name">{{ "{{" }} db.database_name {{ "}}" }}</div>
-                                                <div class="database-host">{{ "{{" }} db.host {{ "}}" }}:{{ "{{" }} db.port {{ "}}" }}</div>
+                                                <div class="database-name">{{ db.database_name }}</div>
+                                                <div class="database-host">{{ db.host }}:{{ db.port }}</div>
                                                 <div class="database-meta">
-                                                    <span class="badge" ng-class="db.type === 'primary' ? 'bg-success' : 'bg-secondary'">{{ "{{" }} db.type {{ "}}" }}</span>
+                                                    <span class="badge" ng-class="db.type === 'primary' ? 'bg-success' : 'bg-secondary'">{{ db.type }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -181,7 +181,7 @@
         <div class="text-center text-white">
             <i class="fas fa-exclamation-triangle fa-4x mb-3 text-warning"></i>
             <h3>SYSTEM ERROR</h3>
-            <p>[{ error }]</p>
+            <p>{{ error }}</p>
         </div>
     </div>
 
@@ -190,7 +190,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6">
-                    <small><i class="fas fa-clock me-1"></i>Last Updated: [{ lastUpdate | date:'medium' }]</small>
+                    <small><i class="fas fa-clock me-1"></i>Last Updated: {{ lastUpdate | date:'medium' }}</small>
                 </div>
                 <div class="col-6 text-end">
                     <a href="/" class="btn btn-outline-light btn-sm">

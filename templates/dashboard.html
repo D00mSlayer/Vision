@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ "{{" }} url_for('static', filename='css/styles.css') {{ "}}" }}">
+    <link rel="stylesheet" href="{[ url_for('static', filename='css/styles.css') ]}"
 </head>
 <body ng-controller="MainController">
     <!-- Navigation -->
@@ -27,19 +27,19 @@
                 <div class="nav-item">
                     <span class="navbar-text me-3">
                         <i class="fas fa-server me-1"></i>
-                        Environments: <span ng-class="getHealthClass('environments')">{{ "{{" }} healthStats.environments.up {{ "}}" }}/{{ "{{" }} healthStats.environments.total {{ "}}" }}</span>
+                        Environments: <span ng-class="getHealthClass('environments')">{{ healthStats.environments.up }}/{{ healthStats.environments.total }}</span>
                     </span>
                 </div>
                 <div class="nav-item">
                     <span class="navbar-text me-3">
                         <i class="fas fa-microchip me-1"></i>
-                        Services: <span ng-class="getHealthClass('microservices')">{{ "{{" }} healthStats.microservices.up {{ "}}" }}/{{ "{{" }} healthStats.microservices.total {{ "}}" }}</span>
+                        Services: <span ng-class="getHealthClass('microservices')">{{ healthStats.microservices.up }}/{{ healthStats.microservices.total }}</span>
                     </span>
                 </div>
                 <div class="nav-item">
                     <span class="navbar-text me-3">
                         <i class="fas fa-database me-1"></i>
-                        Databases: <span ng-class="getHealthClass('databases')">{{ "{{" }} healthStats.databases.up {{ "}}" }}/{{ "{{" }} healthStats.databases.total {{ "}}" }}</span>
+                        Databases: <span ng-class="getHealthClass('databases')">{{ healthStats.databases.up }}/{{ healthStats.databases.total }}</span>
                     </span>
                 </div>
                 <div class="nav-item">
@@ -64,7 +64,7 @@
         <!-- Error State -->
         <div ng-if="error" class="alert alert-danger" role="alert">
             <h4 class="alert-heading">Error Loading Data</h4>
-            <p>{{ "{{" }} error {{ "}}" }}</p>
+            <p>{{ error }}</p>
         </div>
 
         <!-- Environment Data -->
@@ -73,41 +73,41 @@
                 <div class="card">
                     <div class="card-header bg-primary text-white">
                         <h3 class="card-title mb-0">
-                            <i class="fas fa-cube me-2"></i>{{ "{{" }} product.name {{ "}}" }}
-                            <span class="badge bg-light text-dark ms-2">{{ "{{" }} product.environments.length {{ "}}" }} environments</span>
+                            <i class="fas fa-cube me-2"></i>{{ product.name }}
+                            <span class="badge bg-light text-dark ms-2">{{ product.environments.length }} environments</span>
                         </h3>
                     </div>
                     
                     <div class="card-body p-0">
-                        <div class="accordion" id="accordion{{ "{{" }} $index {{ "}}" }}">
+                        <div class="accordion" id="accordion{{ $index }}">
                             <div ng-repeat="env in product.environments" class="accordion-item">
-                                <h2 class="accordion-header" id="heading{{ "{{" }} $parent.$index {{ "}}" }}{{ "{{" }} $index {{ "}}" }}">
+                                <h2 class="accordion-header" id="heading{{ $parent.$index }}{{ $index }}">
                                     <button class="accordion-button" type="button" 
                                             data-bs-toggle="collapse" 
-                                            data-bs-target="#collapse{{ "{{" }} $parent.$index {{ "}}" }}{{ "{{" }} $index {{ "}}" }}"
+                                            data-bs-target="#collapse{{ $parent.$index }}{{ $index }}"
                                             aria-expanded="true" 
-                                            aria-controls="collapse{{ "{{" }} $parent.$index {{ "}}" }}{{ "{{" }} $index {{ "}}" }}"
+                                            aria-controls="collapse{{ $parent.$index }}{{ $index }}"
                                         
                                         <div class="d-flex align-items-center w-100">
                                             <div class="me-3">
                                                 <i class="fas fa-circle" ng-class="getHealthClass('env_' + env.url)"></i>
                                             </div>
                                             <div class="flex-grow-1">
-                                                <strong>{{ "{{" }} env.name {{ "}}" }}</strong>
-                                                <small class="text-muted ms-2">{{ "{{" }} env.url {{ "}}" }}</small>
+                                                <strong>{{ env.name }}</strong>
+                                                <small class="text-muted ms-2">{{ env.url }}</small>
                                             </div>
                                             <div class="me-3">
-                                                <span class="badge bg-secondary">{{ "{{" }} env.git_branch {{ "}}" }}</span>
-                                                <span class="badge bg-info text-dark">{{ "{{" }} env.git_tag {{ "}}" }}</span>
+                                                <span class="badge bg-secondary">{{ env.git_branch }}</span>
+                                                <span class="badge bg-info text-dark">{{ env.git_tag }}</span>
                                             </div>
                                         </div>
                                     </button>
                                 </h2>
                                 
-                                <div id="collapse{{ "{{" }} $parent.$index {{ "}}" }}{{ "{{" }} $index {{ "}}" }}" 
+                                <div id="collapse{{ $parent.$index }}{{ $index }}" 
                                      class="accordion-collapse collapse show"
-                                     aria-labelledby="heading{{ "{{" }} $parent.$index {{ "}}" }}{{ "{{" }} $index {{ "}}" }}"
-                                     data-bs-parent="#accordion{{ "{{" }} $parent.$index {{ "}}" }}"
+                                     aria-labelledby="heading{{ $parent.$index }}{{ $index }}"
+                                     data-bs-parent="#accordion{{ $parent.$index }}">
                                     
                                     <div class="accordion-body">
                                         <div class="row">
@@ -119,13 +119,13 @@
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <div>
                                                                 <i class="fas fa-circle me-2" ng-class="getHealthClass('ms_' + service.server_url)"></i>
-                                                                <strong>{{ "{{" }} service.name_of_service {{ "}}" }}</strong>
-                                                                <small class="text-muted d-block">{{ "{{" }} service.server_url {{ "}}" }}</small>
+                                                                <strong>{{ service.name_of_service }}</strong>
+                                                                <small class="text-muted d-block">{{ service.server_url }}</small>
                                                             </div>
                                                             <div>
-                                                                <span class="badge bg-secondary me-1">{{ "{{" }} service.git_branch {{ "}}" }}</span>
-                                                                <span class="badge bg-info text-dark">{{ "{{" }} service.git_tag {{ "}}" }}</span>
-                                                                <span class="badge bg-warning text-dark">:{{ "{{" }} service.port {{ "}}" }}</span>
+                                                                <span class="badge bg-secondary me-1">{{ service.git_branch }}</span>
+                                                                <span class="badge bg-info text-dark">{{ service.git_tag }}</span>
+                                                                <span class="badge bg-warning text-dark">:{{ service.port }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -140,12 +140,12 @@
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <div>
                                                                 <i class="fas fa-circle me-2" ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
-                                                                <strong>{{ "{{" }} db.database_name {{ "}}" }}</strong>
-                                                                <small class="text-muted d-block">{{ "{{" }} db.host {{ "}}" }}:{{ "{{" }} db.port {{ "}}" }}</small>
+                                                                <strong>{{ db.database_name }}</strong>
+                                                                <small class="text-muted d-block">{{ db.host }}:{{ db.port }}</small>
                                                             </div>
                                                             <div>
-                                                                <span class="badge" ng-class="db.type === 'primary' ? 'bg-success' : 'bg-secondary'">{{ "{{" }} db.type {{ "}}" }}</span>
-                                                                <span class="badge bg-info text-dark">{{ "{{" }} db.username {{ "}}" }}</span>
+                                                                <span class="badge" ng-class="db.type === 'primary' ? 'bg-success' : 'bg-secondary'">{{ db.type }}</span>
+                                                                <span class="badge bg-info text-dark">{{ db.username }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -159,8 +159,8 @@
                                                 <h6><i class="fas fa-chart-line me-2"></i>Logging & Monitoring</h6>
                                                 <div class="bg-light p-2 rounded">
                                                     <small>
-                                                        <strong>Splunk Index:</strong> {{ "{{" }} env.splunk.index {{ "}}" }} | 
-                                                        <strong>Source Type:</strong> {{ "{{" }} env.splunk.sourcetype {{ "}}" }}
+                                                        <strong>Splunk Index:</strong> {{ env.splunk.index }} | 
+                                                        <strong>Source Type:</strong> {{ env.splunk.sourcetype }}
                                                     </small>
                                                 </div>
                                             </div>
@@ -182,6 +182,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     
     <!-- Custom JS -->
-    <script src="{{ "{{" }} url_for('static', filename='js/dashboard.js') {{ "}}" }}"></script>
+    <script src="{[ url_for('static', filename='js/dashboard.js') ]}"></script>
 </body>
 </html>
