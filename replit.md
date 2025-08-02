@@ -34,9 +34,11 @@ Preferred communication style: Simple, everyday language.
 
 **Health Monitoring System**
 - Automated URL health checking with 5-second timeouts
-- Background thread for continuous health status updates
-- HTTP status code validation (200 = healthy)
-- Real-time health indicator updates in the UI
+- PostgreSQL database connectivity monitoring with connection pooling
+- Background thread for continuous health status updates (30-second intervals)
+- HTTP status code validation (200 = healthy) and database query validation
+- Real-time health indicator updates in both detailed and monitor views
+- Comprehensive health statistics including environments, microservices, and databases
 
 **Error Handling and Logging**
 - Comprehensive logging configuration with DEBUG level
@@ -55,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - Flask - Web framework for API endpoints and template rendering
 - PyYAML - YAML file parsing and data loading
 - Requests - HTTP client for health check functionality
+- psycopg2-binary - PostgreSQL database adapter for database health monitoring
 
 **Development Tools**
 - Python logging module for application monitoring

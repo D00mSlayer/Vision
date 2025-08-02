@@ -2,6 +2,7 @@ import os
 import yaml
 import logging
 import requests
+import psycopg2
 from flask import Flask, render_template, jsonify
 from urllib.parse import urlparse
 import threading
@@ -41,8 +42,31 @@ def check_url_health(url):
     except:
         return False
 
+def check_database_health(host, port, database_name, username, password):
+    """Check if a PostgreSQL database is accessible"""
+    try:
+        # Attempt to connect to the database
+        connection = psycopg2.connect(
+            host=host,
+            port=port,
+            database=database_name,
+            user=username,
+            password=password,
+            connect_timeout=5
+        )
+        # Execute a simple query to verify the connection
+        cursor = connection.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        connection.close()
+        return True
+    except Exception as e:
+        app.logger.debug(f"Database health check failed for {host}:{port}/{database_name}: {e}")
+        return False
+
 def update_health_status():
-    """Update health status for all URLs"""
+    """Update health status for all URLs and databases"""
     global health_status
     
     if not environment_data:
@@ -60,6 +84,18 @@ def update_health_status():
                 if ms_url:
                     health_key = f"ms_{ms_url}"
                     health_status[health_key] = check_url_health(ms_url)
+            
+            for database in env.get('databases', []):
+                if all(key in database for key in ['host', 'port', 'database_name', 'username', 'password']):
+                    db_identifier = f"{database['host']}:{database['port']}/{database['database_name']}"
+                    health_key = f"db_{db_identifier}"
+                    health_status[health_key] = check_database_health(
+                        database['host'],
+                        database['port'],
+                        database['database_name'],
+                        database['username'],
+                        database['password']
+                    )
 
 def health_check_worker():
     """Background worker to continuously update health status"""

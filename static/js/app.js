@@ -154,6 +154,18 @@ angular.module('visionApp', [])
                         }
                     });
                 }
+                
+                // Count databases
+                if (env.databases) {
+                    env.databases.forEach(function(db) {
+                        const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
+                        if ($scope.healthStatus.hasOwnProperty(dbKey)) {
+                            total++;
+                            if ($scope.healthStatus[dbKey]) online++;
+                            else offline++;
+                        }
+                    });
+                }
             });
         });
         
@@ -180,6 +192,17 @@ angular.module('visionApp', [])
                     if ($scope.healthStatus.hasOwnProperty(msKey)) {
                         total++;
                         if ($scope.healthStatus[msKey]) online++;
+                    }
+                });
+            }
+            
+            // Count databases
+            if (env.databases) {
+                env.databases.forEach(function(db) {
+                    const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
+                    if ($scope.healthStatus.hasOwnProperty(dbKey)) {
+                        total++;
+                        if ($scope.healthStatus[dbKey]) online++;
                     }
                 });
             }

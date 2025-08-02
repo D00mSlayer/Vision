@@ -474,6 +474,46 @@ a:hover {
     font-size: 0.9rem;
 }
 
+.database-health-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.db-health-item {
+    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 0.4rem 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.db-health-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.db-indicator {
+    font-size: 0.7rem;
+}
+
+.db-label {
+    font-weight: 500;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.db-host {
+    color: #6c757d;
+    font-size: 0.7rem;
+}
+
 /* Auto-scroll Indicator */
 .auto-scroll-indicator {
     position: fixed;

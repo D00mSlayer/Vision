@@ -122,9 +122,16 @@
                                     
                                     <!-- Database indicators -->
                                     <div class="database-indicators" ng-if="environment.databases.length > 0">
-                                        <div class="db-section">
+                                        <div class="db-section mb-2">
                                             <i class="fas fa-database text-muted me-2"></i>
                                             <span class="text-muted">{{ environment.databases.length }} Database{{ environment.databases.length > 1 ? 's' : '' }}</span>
+                                        </div>
+                                        <div class="database-health-grid">
+                                            <div ng-repeat="db in environment.databases" class="db-health-item">
+                                                <i class="fas fa-circle db-indicator" ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
+                                                <span class="db-label">{{ db.type }} DB</span>
+                                                <small class="db-host">{{ db.host }}</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -240,6 +247,11 @@
                                                         <div class="card-body">
                                                             <h6 class="card-title">
                                                                 <span class="badge bg-primary">{{ db.type }}</span>
+                                                                <span class="ms-2">
+                                                                    <i class="fas fa-circle" 
+                                                                       ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
+                                                                    {{ getHealthText('db_' + db.host + ':' + db.port + '/' + db.database_name) }}
+                                                                </span>
                                                             </h6>
                                                             <div class="small">
                                                                 <div><strong>Host:</strong> {{ db.host }}</div>
