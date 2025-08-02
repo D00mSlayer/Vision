@@ -15,8 +15,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key_change_in_production")
 
 # Configure Jinja2 to use different delimiters to avoid conflicts with AngularJS
-app.jinja_env.variable_start_string = '{['
-app.jinja_env.variable_end_string = ']}'
+app.jinja_env.variable_start_string = '[{'
+app.jinja_env.variable_end_string = '}]'
 
 # Import routes after app creation to avoid circular imports
 import routes
