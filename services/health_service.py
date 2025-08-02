@@ -9,19 +9,7 @@ import requests
 import logging
 from services.environment_service import EnvironmentService
 
-# Import database drivers with fallback handling
-try:
-    import psycopg2
-    PSYCOPG2_AVAILABLE = True
-except ImportError:
-    PSYCOPG2_AVAILABLE = False
-
-try:
-    import pymysql
-    PYMYSQL_AVAILABLE = True
-except ImportError:
-    PYMYSQL_AVAILABLE = False
-
+# Import pyodbc for MS SQL Server
 try:
     import pyodbc
     PYODBC_AVAILABLE = True
@@ -96,74 +84,9 @@ class HealthService:
             return False
     
     def _check_database_health(self, db_config):
-        """Check if a database is healthy"""
-        try:
-            port = db_config.get('port', 1433)
-            db_type = db_config.get('type', 'primary')
-            
-            # Determine database type by port or explicit type
-            if port == 5432:  # PostgreSQL
-                return self._check_postgresql_health(db_config)
-            elif port == 3306:  # MySQL
-                return self._check_mysql_health(db_config)
-            elif port == 1433 or db_config.get('driver') == 'mssql':  # MSSQL
-                return self._check_mssql_health(db_config)
-            else:
-                # Default to MSSQL if no specific port detected
-                return self._check_mssql_health(db_config)
-        except Exception as e:
-            self.logger.debug(f"Database health check failed for {db_config['host']}:{db_config.get('port', 1433)}/{db_config['database_name']}: {e}")
-            return False
+        """Check MS SQL Server database health"""
+        return self._check_mssql_health(db_config)
     
-    def _check_postgresql_health(self, db_config):
-        """Check PostgreSQL database health"""
-        if not PSYCOPG2_AVAILABLE:
-            self.logger.warning("psycopg2 not available, skipping PostgreSQL health check")
-            return False
-        
-        try:
-            import psycopg2 as pg2
-            conn = pg2.connect(
-                host=db_config['host'],
-                port=db_config['port'],
-                database=db_config['database_name'],
-                user=db_config['username'],
-                password=db_config['password'],
-                connect_timeout=5
-            )
-            with conn.cursor() as cursor:
-                cursor.execute('SELECT 1')
-                cursor.fetchone()
-            conn.close()
-            return True
-        except Exception as e:
-            self.logger.debug(f"PostgreSQL health check failed for {db_config['host']}:{db_config['port']}/{db_config['database_name']}: {e}")
-            return False
-    
-    def _check_mysql_health(self, db_config):
-        """Check MySQL database health"""
-        if not PYMYSQL_AVAILABLE:
-            self.logger.warning("PyMySQL not available, skipping MySQL health check")
-            return False
-        
-        try:
-            conn = pymysql.connect(
-                host=db_config['host'],
-                port=db_config['port'],
-                database=db_config['database_name'],
-                user=db_config['username'],
-                password=db_config['password'],
-                connect_timeout=5
-            )
-            with conn.cursor() as cursor:
-                cursor.execute('SELECT 1')
-                cursor.fetchone()
-            conn.close()
-            return True
-        except Exception as e:
-            self.logger.debug(f"MySQL health check failed for {db_config['host']}:{db_config['port']}/{db_config['database_name']}: {e}")
-            return False
-
     def _check_mssql_health(self, db_config):
         """Check Microsoft SQL Server database health using pyodbc with ODBC Driver 18"""
         if not PYODBC_AVAILABLE:
@@ -171,8 +94,10 @@ class HealthService:
             return False
         
         try:
+            import pyodbc as odbc
+            
             # Get available ODBC drivers
-            drivers = [driver for driver in pyodbc.drivers() if 'ODBC Driver' in driver and 'for SQL Server' in driver]
+            drivers = [driver for driver in odbc.drivers() if 'ODBC Driver' in driver and 'for SQL Server' in driver]
             
             if not drivers:
                 self.logger.warning("No ODBC drivers found for SQL Server")
@@ -192,7 +117,7 @@ class HealthService:
                 f"Connection Timeout=5;"
             )
             
-            conn = pyodbc.connect(connection_string)
+            conn = odbc.connect(connection_string)
             cursor = conn.cursor()
             cursor.execute('SELECT 1')
             cursor.fetchone()

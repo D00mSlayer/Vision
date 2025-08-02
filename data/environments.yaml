@@ -11,14 +11,14 @@ product_versions:
           sourcetype: "product_a_dev_logs"
         databases:
           - type: "primary"
-            host: "192.168.1.10"
-            port: 5432
+            host: "sql-dev.producta.com"
+            port: 1433
             database_name: "product_a_dev_db"
             username: "devuser"
             password: "devpassword"
           - type: "secondary"
-            host: "db-replica.producta.com"
-            port: 5432
+            host: "sql-dev-replica.producta.com"
+            port: 1433
             database_name: "product_a_dev_db_replica"
             username: "devuser_ro"
             password: "devpassword_ro"
@@ -42,8 +42,8 @@ product_versions:
           sourcetype: "product_a_stg_logs"
         databases:
           - type: "primary"
-            host: "192.168.2.10"
-            port: 5432
+            host: "sql-stg.producta.com"
+            port: 1433
             database_name: "product_a_stg_db"
             username: "stguser"
             password: "stgpassword"
@@ -67,14 +67,14 @@ product_versions:
           sourcetype: "product_a_prod_logs"
         databases:
           - type: "primary"
-            host: "prod-db.producta.com"
-            port: 5432
+            host: "sql-prod.producta.com"
+            port: 1433
             database_name: "product_a_prod_db"
             username: "produser"
             password: "prodpassword"
           - type: "replica"
-            host: "prod-db-replica.producta.com"
-            port: 5432
+            host: "sql-prod-replica.producta.com"
+            port: 1433
             database_name: "product_a_prod_db"
             username: "produser_ro"
             password: "prodpassword_ro"
@@ -100,8 +100,8 @@ product_versions:
           sourcetype: "product_b_dev_logs"
         databases:
           - type: "primary"
-            host: "192.168.1.20"
-            port: 3306
+            host: "sql-dev.productb.com"
+            port: 1433
             database_name: "product_b_dev_db"
             username: "devuser"
             password: "devpassword"
@@ -125,14 +125,14 @@ product_versions:
           sourcetype: "product_b_prod_logs"
         databases:
           - type: "primary"
-            host: "prod-db.productb.com"
-            port: 3306
+            host: "sql-prod.productb.com"
+            port: 1433
             database_name: "product_b_prod_db"
             username: "produser"
             password: "prodpassword"
           - type: "analytics"
-            host: "analytics-db.productb.com"
-            port: 3306
+            host: "sql-analytics.productb.com"
+            port: 1433
             database_name: "product_b_analytics"
             username: "analytics_user"
             password: "analytics_password"
