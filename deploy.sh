@@ -61,16 +61,19 @@ fi
 echo "🚀 Starting Vision Dashboard..."
 docker-compose up -d
 
+# Get port from docker-compose or default
+PORT=$(grep -E "^\s*-\s*\".*:5000\"" docker-compose.yml | sed 's/.*"\([0-9]*\):5000".*/\1/' || echo "5000")
+
 # Wait for application to be ready
 echo "⏳ Waiting for application to start..."
 sleep 10
 
 # Check if application is running
-if curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
+if curl -f http://localhost:$PORT/api/health > /dev/null 2>&1; then
     echo "✅ Vision Dashboard is running successfully!"
     echo ""
-    echo "🌐 Access the application at: http://localhost:5000"
-    echo "📊 Monitor view at: http://localhost:5000 (click 'Switch to Monitor View')"
+    echo "🌐 Access the application at: http://localhost:$PORT"
+    echo "📊 Monitor view at: http://localhost:$PORT (click 'Switch to Monitor View')"
     echo ""
     echo "📋 Useful commands:"
     echo "   View logs: docker-compose logs -f"

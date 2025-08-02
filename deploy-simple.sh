@@ -52,15 +52,27 @@ if [ ! -f data/environments.yaml ]; then
     echo "   You can use the sample data or create your own"
 fi
 
-# Install dependencies (only if pip is available and this isn't Replit)
-if command -v pip &> /dev/null && [ ! -f .replit ]; then
-    echo "📦 Installing Python dependencies..."
+# Install dependencies
+echo "📦 Installing Python dependencies..."
+if command -v pip3 &> /dev/null; then
+    pip3 install flask pyyaml requests pyodbc pymssql gunicorn || {
+        echo "⚠️  Some dependencies failed to install. Trying with user installation..."
+        pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn || {
+            echo "⚠️  Some dependencies still failed. Continuing with available packages..."
+            echo "   Required packages: flask, pyyaml, requests, pyodbc, pymssql, gunicorn"
+        }
+    }
+elif command -v pip &> /dev/null; then
     pip install flask pyyaml requests pyodbc pymssql gunicorn || {
-        echo "⚠️  Failed to install some dependencies. This is normal if some are already installed."
-        echo "   Required packages: flask, pyyaml, requests, pyodbc, pymssql, gunicorn"
+        echo "⚠️  Some dependencies failed to install. Trying with user installation..."
+        pip install --user flask pyyaml requests pyodbc pymssql gunicorn || {
+            echo "⚠️  Some dependencies still failed. Continuing with available packages..."
+            echo "   Required packages: flask, pyyaml, requests, pyodbc, pymssql, gunicorn"
+        }
     }
 else
-    echo "✅ Dependencies assumed to be managed by environment (Replit/container)"
+    echo "⚠️  pip not found. Please install dependencies manually:"
+    echo "   pip install flask pyyaml requests pyodbc pymssql gunicorn"
 fi
 
 # Set environment variables
@@ -69,15 +81,19 @@ if [ -f .env ]; then
     echo "✅ Environment variables loaded"
 fi
 
+# Get port from environment or use default
+PORT=${PORT:-5000}
+
 # Start the application
-echo "🚀 Starting Vision Dashboard..."
+echo "🚀 Starting Vision Dashboard on port $PORT..."
 
 if command -v gunicorn &> /dev/null; then
     echo "   Using Gunicorn server..."
-    gunicorn --bind 0.0.0.0:5000 --workers 1 --timeout 120 main:app &
+    gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 120 main:app &
     APP_PID=$!
 else
     echo "   Using Flask development server..."
+    export FLASK_RUN_PORT=$PORT
     python3 main.py &
     APP_PID=$!
 fi
@@ -87,11 +103,11 @@ echo "⏳ Waiting for application to start..."
 sleep 5
 
 # Check if application is running
-if curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
+if curl -f http://localhost:$PORT/api/health > /dev/null 2>&1; then
     echo "✅ Vision Dashboard is running successfully!"
     echo ""
-    echo "🌐 Access the application at: http://localhost:5000"
-    echo "📊 Monitor view at: http://localhost:5000 (click 'Switch to Monitor View')"
+    echo "🌐 Access the application at: http://localhost:$PORT"
+    echo "📊 Monitor view at: http://localhost:$PORT (click 'Switch to Monitor View')"
     echo ""
     echo "📋 Useful commands:"
     echo "   Stop app:  kill $APP_PID"
@@ -99,7 +115,7 @@ if curl -f http://localhost:5000/api/health > /dev/null 2>&1; then
     echo "   View process: ps aux | grep python"
 elif ps -p $APP_PID > /dev/null; then
     echo "✅ Application started (PID: $APP_PID)"
-    echo "🌐 Access the application at: http://localhost:5000"
+    echo "🌐 Access the application at: http://localhost:$PORT"
     echo "⏳ Application may still be initializing, please wait a moment"
 else
     echo "❌ Application failed to start properly"

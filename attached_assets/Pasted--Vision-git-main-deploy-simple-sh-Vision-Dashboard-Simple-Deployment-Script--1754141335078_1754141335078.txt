@@ -1,0 +1,50 @@
+➜  Vision git:(main) ✗ ./deploy-simple.sh
+🚀 Vision Dashboard Simple Deployment Script
+=============================================
+⚠️  Warning: Python version 3.10 detected. Python 3.11+ is recommended.
+✅ .env file already exists
+✅ Logs directory created
+✅ Dependencies assumed to be managed by environment (Replit/container)
+✅ Environment variables loaded
+🚀 Starting Vision Dashboard...
+   Using Gunicorn server...
+⏳ Waiting for application to start...
+[2025-08-02 18:57:52 +0530] [1722599] [INFO] Starting gunicorn 21.2.0
+[2025-08-02 18:57:52 +0530] [1722599] [INFO] Listening at: http://0.0.0.0:5099 (1722599)
+[2025-08-02 18:57:52 +0530] [1722599] [INFO] Using worker: sync
+[2025-08-02 18:57:52 +0530] [1722655] [INFO] Booting worker with pid: 1722655
+[2025-08-02 18:57:52 +0530] [1722655] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/arbiter.py", line 609, in spawn_worker
+    worker.init_process()
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 134, in init_process
+    self.load_wsgi()
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 146, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/app/base.py", line 67, in wsgi
+    self.callable = self.load()
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 58, in load
+    return self.load_wsgiapp()
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 48, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/home/vvarun/.local/lib/python3.10/site-packages/gunicorn/util.py", line 371, in import_app
+    mod = importlib.import_module(module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/vvarun/work/sandbox/Vision/main.py", line 1, in <module>
+    from app import app
+  File "/home/vvarun/work/sandbox/Vision/app.py", line 5, in <module>
+    import pyodbc
+ModuleNotFoundError: No module named 'pyodbc'
+[2025-08-02 18:57:52 +0530] [1722655] [INFO] Worker exiting (pid: 1722655)
+[2025-08-02 18:57:52 +0530] [1722599] [ERROR] Worker (pid:1722655) exited with code 3
+[2025-08-02 18:57:52 +0530] [1722599] [ERROR] Shutting down: Master
+[2025-08-02 18:57:52 +0530] [1722599] [ERROR] Reason: Worker failed to boot.
+❌ Application failed to start properly
+📋 Check for errors in the terminal output above
