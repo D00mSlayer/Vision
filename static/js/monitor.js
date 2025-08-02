@@ -1,8 +1,8 @@
 // Vision Monitor Controller - Full Screen Display
 angular.module('visionApp', [])
 .config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('[{');
-    $interpolateProvider.endSymbol('}]');
+    $interpolateProvider.startSymbol('{{');
+    $interpolateProvider.endSymbol('}}');
 })
 .controller('MonitorController', function($scope, $http, $interval, $timeout) {
     // Initialize data

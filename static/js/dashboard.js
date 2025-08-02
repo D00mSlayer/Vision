@@ -1,8 +1,8 @@
 // Vision Dashboard Controller - Detailed View
 angular.module('visionApp', [])
 .config(function($interpolateProvider) {
-    $interpolateProvider.startSymbol('[{');
-    $interpolateProvider.endSymbol('}]');
+    $interpolateProvider.startSymbol('{{');
+    $interpolateProvider.endSymbol('}}');
 })
 .controller('MainController', function($scope, $http, $interval) {
     // Initialize data
