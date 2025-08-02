@@ -21,12 +21,13 @@ if docker ps | grep -q "vision-dashboard"; then
     echo "✅ Container is running!"
     echo "🌐 Access at: http://localhost:5099"
     
-    # Test the connection
+    # Test the connection with timeout
     echo "5️⃣ Testing connection..."
-    if curl -f http://localhost:5099/api/health >/dev/null 2>&1; then
+    if timeout 10 curl -f http://localhost:5099/api/health >/dev/null 2>&1; then
         echo "✅ Application is responding!"
     else
-        echo "⏳ Application starting up... (try again in 10 seconds)"
+        echo "⏳ Application starting up... (may take up to 30 seconds)"
+        echo "💡 Try manually: curl http://localhost:5099/api/health"
     fi
 else
     echo "❌ Container failed to start. Logs:"

@@ -1,0 +1,34 @@
+➜  Vision git:(main) ✗ ./fix_docker.sh       
+🔧 Fixing Docker Setup for Vision Dashboard
+
+1️⃣ Cleaning up existing containers...
+2️⃣ Building fresh Docker image...
+[+] Building 87.5s (13/13) FINISHED                                                                                                                                                                        
+ => [internal] load build definition from Dockerfile                                                                                                                                                  0.0s
+ => => transferring dockerfile: 1.34kB                                                                                                                                                                0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim                                                                                                                                   1.0s
+ => [internal] load .dockerignore                                                                                                                                                                     0.0s
+ => => transferring context: 483B                                                                                                                                                                     0.0s
+ => [1/8] FROM docker.io/library/python:3.11-slim@sha256:0ce77749ac83174a31d5e107ce0cfa6b28a2fd6b0615e029d9d84b39c48976ee                                                                             0.0s
+ => [internal] load build context                                                                                                                                                                     0.0s
+ => => transferring context: 3.51kB                                                                                                                                                                   0.0s
+ => CACHED [2/8] WORKDIR /app                                                                                                                                                                         0.0s
+ => [3/8] RUN apt-get update && apt-get install -y     build-essential     unixodbc     unixodbc-dev     freetds-dev     freetds-bin     tdsodbc     curl     && rm -rf /var/lib/apt/lists/*         38.3s
+ => [4/8] RUN echo "[FreeTDS]\nDescription = FreeTDS Driver for Linux & MSSQL\nDriver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so\nSetup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so\nFileUsage =  0.2s 
+ => [5/8] COPY requirements_docker.txt ./requirements.txt                                                                                                                                             0.0s 
+ => [6/8] RUN pip install --no-cache-dir -r requirements.txt                                                                                                                                          7.5s 
+ => [7/8] COPY . .                                                                                                                                                                                    0.1s 
+ => [8/8] RUN mkdir -p logs                                                                                                                                                                           0.2s 
+ => exporting to image                                                                                                                                                                               40.2s 
+ => => exporting layers                                                                                                                                                                              40.2s 
+ => => writing image sha256:2cd6d7f5b72bf0f18938e17ccfe8cc1cd93feac6db8bfe3d61bc28cfd9d357bd                                                                                                          0.0s 
+ => => naming to docker.io/library/vision-vision-app                                                                                                                                                  0.0s 
+3️⃣ Starting with port 5099...
+[+] Running 2/2
+ ⠿ Network vision_vision-network  Created                                                                                                                                                             0.1s
+ ⠿ Container vision-dashboard     Started                                                                                                                                                             0.3s
+4️⃣ Checking container status...
+✅ Container is running!
+🌐 Access at: http://localhost:5099
+5️⃣ Testing connection...
+
