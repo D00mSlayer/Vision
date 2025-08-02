@@ -14,10 +14,27 @@ echo ""
 export PORT=$PORT
 
 # Run docker compose
-docker compose up -d
-
-echo ""
-echo "✅ Vision Dashboard is starting up..."
+if docker compose up -d; then
+    echo ""
+    echo "✅ Vision Dashboard is starting up..."
+    
+    # Wait a moment for the container to start
+    sleep 3
+    
+    # Check if container is actually running
+    if docker ps | grep -q "vision-dashboard"; then
+        echo "✅ Container is running successfully"
+    else
+        echo "❌ Container failed to start. Checking logs..."
+        docker logs vision-dashboard 2>/dev/null || echo "No container logs available"
+        echo ""
+        echo "Try rebuilding with: docker compose build --no-cache"
+        exit 1
+    fi
+else
+    echo "❌ Failed to start containers"
+    exit 1
+fi
 echo "🌐 Access at: http://localhost:$PORT"
 echo "📊 Health API: http://localhost:$PORT/api/health"
 echo "📋 Environment API: http://localhost:$PORT/api/environments"

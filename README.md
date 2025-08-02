@@ -137,7 +137,12 @@ PORT=5099 docker compose up -d
 curl http://localhost:5099/api/health
 ```
 
-**Step 3: If still not working, try rebuild**
+**Step 3: Quick fix (rebuild everything)**
+```bash
+./fix-docker.sh
+```
+
+**Step 4: Manual rebuild if needed**
 ```bash
 docker compose down
 docker compose build --no-cache
