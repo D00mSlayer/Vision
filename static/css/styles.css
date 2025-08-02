@@ -1,14 +1,60 @@
-/* Vision App Custom Styles */
+/* Vision App Custom Styles - Updated for Bootstrap 5.3 compatibility */
 
+/* Ensure Bootstrap CSS is fully applied first */
 body {
-    background-color: #f8f9fa;
+    background-color: #f8f9fa !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Force Bootstrap accordion functionality */
+.accordion-button:not(.collapsed) {
+    background-color: #e7f3ff !important;
+    color: #0056b3 !important;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.125) !important;
+}
+
+.accordion-button {
+    background-color: #ffffff !important;
+    border: none !important;
+    font-weight: 500;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    border-color: transparent !important;
+}
+
+.accordion-collapse {
+    border: 0 !important;
+}
+
+.accordion-body {
+    padding: 1.25rem !important;
 }
 
 /* Header Styles */
 .navbar-brand {
     font-weight: bold;
     font-size: 1.5rem;
+}
+
+/* Ensure accordion is interactive */
+.accordion-button {
+    cursor: pointer !important;
+    text-decoration: none !important;
+}
+
+.accordion-button:hover {
+    background-color: #f0f8ff !important;
+}
+
+/* Ensure accordion collapses work */
+.accordion-item {
+    border: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
 }
 
 /* Card Styles */
@@ -439,6 +485,30 @@ a:hover {
 /* Preview Mode Styles - Monitor Display */
 .preview-mode {
     font-size: 1.1rem;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+    color: #ffffff !important;
+    min-height: 100vh !important;
+}
+
+/* Fix Bootstrap grid system in monitor mode */
+.preview-mode .container-fluid {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+.preview-mode .row {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
+.preview-mode .col-12,
+.preview-mode .col-md-4,
+.preview-mode .col-md-8,
+.preview-mode .col-4 {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
 }
 
 .preview-mode .card {
