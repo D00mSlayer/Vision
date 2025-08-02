@@ -2,16 +2,19 @@
 
 Vision is an internal web application designed for developers to provide a centralized source of truth for environment-related information. The application serves as a dashboard that displays product environments, their health status, database configurations, and other critical infrastructure details.
 
-## 🚀 Quick Start with Docker
+## 🚀 Quick Start with Docker (Company Deployment)
 
-The easiest way to run Vision is using Docker Compose:
+The easiest way to run Vision on your company servers is using Docker Compose:
 
 ```bash
 # Clone and navigate to the project
 git clone <your-repo-url>
 cd vision-dashboard
 
-# Start the application
+# One-command deployment
+./deploy.sh
+
+# Or manually with Docker Compose
 docker compose up -d
 
 # The application will be available at http://localhost:5000
@@ -22,6 +25,8 @@ That's it! The application will automatically:
 - Start the Flask server
 - Begin health monitoring
 - Serve the web interface
+
+**Note**: Docker setup is designed for company server deployment. For Replit development, the application runs directly with the Flask server.
 
 ## 📋 Table of Contents
 
@@ -89,15 +94,15 @@ That's it! The application will automatically:
 
 3. **Access**: Open http://localhost:5000
 
-### Method 2: Local Development
+### Method 2: Local Development (Replit/Direct Python)
 
 1. **Prerequisites**:
    - Python 3.11+
    - MS SQL Server ODBC drivers (optional, pymssql used as fallback)
 
-2. **Install Dependencies**:
+2. **Install Dependencies** (if not using Replit):
    ```bash
-   pip install -r requirements.txt
+   pip install flask pyyaml requests pyodbc pymssql gunicorn
    ```
 
 3. **Environment Setup**:
@@ -107,7 +112,11 @@ That's it! The application will automatically:
 
 4. **Run Application**:
    ```bash
+   # For development (Replit environment)
    gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app
+   
+   # For production
+   gunicorn --bind 0.0.0.0:5000 --workers 2 main:app
    ```
 
 ### Method 3: Production Deployment

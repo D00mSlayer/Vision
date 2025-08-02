@@ -46,9 +46,16 @@ if [ ! -f data/environments.yaml ]; then
     echo "   You can use the sample data or create your own"
 fi
 
-# Pull latest images (if building from registry)
+# Build the Docker image
 echo "📦 Building Vision Dashboard..."
-docker-compose build
+if ! docker-compose build; then
+    echo "❌ Docker build failed. Please check the error above."
+    echo "Common issues:"
+    echo "   - Missing requirements_docker.txt file"
+    echo "   - Network connectivity issues"
+    echo "   - Insufficient disk space"
+    exit 1
+fi
 
 # Start the application
 echo "🚀 Starting Vision Dashboard..."

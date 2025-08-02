@@ -6,6 +6,15 @@ Vision is an internal web application designed for developers to provide a centr
 
 The application is built with a focus on low maintenance, using a simple architecture with hardcoded YAML data sources that can be easily updated by development teams.
 
+## Recent Updates (August 2025)
+
+✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
+✓ **Complete Docker Deployment Package**: Created comprehensive deployment setup with Dockerfile, docker-compose.yml, and automated deployment scripts
+✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
+✓ **Production Documentation**: Built complete deployment guides including README.md, DEPLOYMENT.md, QUICKSTART.md, and nginx configuration
+✓ **One-Command Deployment**: Implemented `./deploy.sh` script for super simple company server setup with Docker
+✓ **Flexible Deployment Options**: Added `./deploy-simple.sh` for environments without Docker (Replit, simple Python servers)
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -60,6 +69,12 @@ Preferred communication style: Simple, everyday language.
 - Requests - HTTP client for health check functionality
 - pyodbc - Primary MS SQL Server ODBC driver for database health monitoring
 - pymssql - Fallback MS SQL Server driver for database connectivity
+- Gunicorn - WSGI server for production deployment
+
+**Deployment Tools**
+- Docker & Docker Compose - Containerized deployment for company servers
+- Nginx - Reverse proxy configuration for production
+- Shell scripts - Automated deployment with `./deploy.sh` and `./deploy-simple.sh`
 
 **Development Tools**
 - Python logging module for application monitoring
@@ -71,3 +86,8 @@ Preferred communication style: Simple, everyday language.
 - No authentication services (internal tool)
 - No third-party APIs beyond health check URLs defined in YAML
 - Static file serving through Flask for CSS/JS assets
+
+**Deployment Architecture**
+- **Company Servers**: Docker-based deployment with one-command setup
+- **Replit Environment**: Direct Python execution with gunicorn
+- **Production**: Nginx reverse proxy with SSL support and health monitoring

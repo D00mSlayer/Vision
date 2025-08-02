@@ -1,0 +1,11 @@
+# Vision Dashboard Dependencies for Docker
+# Generated from pyproject.toml
+
+email-validator>=2.2.0
+flask>=3.1.1
+flask-sqlalchemy>=3.1.1
+gunicorn>=23.0.0
+pymssql>=2.3.7
+pyodbc>=5.2.0
+pyyaml>=6.0.2
+requests>=2.32.4

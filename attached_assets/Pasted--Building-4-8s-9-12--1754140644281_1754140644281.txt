@@ -1,0 +1,21 @@
+[+] Building 4.8s (9/12)                                                                                                                                                                                   
+ => [internal] load build definition from Dockerfile                                                                                                                                                  0.0s
+ => => transferring dockerfile: 1.32kB                                                                                                                                                                0.0s
+ => [internal] load metadata for docker.io/library/python:3.11-slim                                                                                                                                   4.7s
+ => [internal] load .dockerignore                                                                                                                                                                     0.0s
+ => => transferring context: 2B                                                                                                                                                                       0.0s
+ => CANCELED [1/8] FROM docker.io/library/python:3.11-slim@sha256:0ce77749ac83174a31d5e107ce0cfa6b28a2fd6b0615e029d9d84b39c48976ee                                                                    0.0s
+ => => resolve docker.io/library/python:3.11-slim@sha256:0ce77749ac83174a31d5e107ce0cfa6b28a2fd6b0615e029d9d84b39c48976ee                                                                             0.0s
+ => => sha256:0ce77749ac83174a31d5e107ce0cfa6b28a2fd6b0615e029d9d84b39c48976ee 9.13kB / 9.13kB                                                                                                        0.0s
+ => => sha256:6310ad99788c86b074f6277f2199636da09e0d3c25b176d4e58ab7c6d1fe110e 1.75kB / 1.75kB                                                                                                        0.0s
+ => => sha256:f3bfd8e9386c2a97d52a0f28a4cc8db81b0340eec7055b720a362fb7efe04aa7 5.37kB / 5.37kB                                                                                                        0.0s
+ => [internal] load build context                                                                                                                                                                     0.0s
+ => => transferring context: 287.65kB                                                                                                                                                                 0.0s
+ => CACHED [2/8] WORKDIR /app                                                                                                                                                                         0.0s
+ => CACHED [3/8] RUN apt-get update && apt-get install -y     build-essential     unixodbc     unixodbc-dev     freetds-dev     freetds-bin     tdsodbc     curl     && rm -rf /var/lib/apt/lists/*   0.0s
+ => CACHED [4/8] RUN echo "[FreeTDS]\nDescription = FreeTDS Driver for Linux & MSSQL\nDriver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so\nSetup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so\nFile  0.0s
+ => ERROR [5/8] COPY requirements.txt .                                                                                                                                                               0.0s
+------
+ > [5/8] COPY requirements.txt .:
+------
+failed to solve: failed to compute cache key: failed to calculate checksum of ref d3f7042d-ab50-489f-8da0-ec3988cf458a::w9v6ok63i902stzru6z8uz984: "/requirements.txt": not found

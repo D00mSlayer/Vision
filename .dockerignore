@@ -1,0 +1,43 @@
+# Vision Dashboard - Docker ignore file
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+venv
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed in container)
+README.md
+DEPLOYMENT.md
+QUICKSTART.md
+attached_assets
+
+# Local development files
+.env
+logs
+*.log
+
+# Docker files (not needed in container)
+docker-compose.yml
+deploy.sh

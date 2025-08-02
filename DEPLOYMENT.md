@@ -4,7 +4,7 @@ This guide provides step-by-step instructions for deploying Vision Dashboard in 
 
 ## 🚀 Quick Deployment (Recommended)
 
-### Option 1: One-Command Deployment
+### Option 1: One-Command Deployment (Company Servers with Docker)
 
 ```bash
 # Clone the repository
@@ -23,7 +23,9 @@ The script will automatically:
 - Build and start the application
 - Verify deployment success
 
-### Option 2: Manual Docker Compose
+**Requirements**: Docker and Docker Compose installed on the server
+
+### Option 2: Manual Docker Compose (Company Servers)
 
 ```bash
 # Clone and setup
@@ -36,6 +38,27 @@ cp .env.example .env
 
 # Start the application
 docker-compose up -d
+
+# Application will be available at http://localhost:5000
+```
+
+### Option 3: Direct Python Deployment (Replit/Simple Servers)
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd vision-dashboard
+
+# Install dependencies
+pip install flask pyyaml requests pyodbc pymssql gunicorn
+
+# Create environment file
+cp .env.example .env
+# Edit .env with your secure session key
+
+# Run the application
+export SESSION_SECRET="your-secure-secret-key"
+gunicorn --bind 0.0.0.0:5000 --workers 2 main:app
 
 # Application will be available at http://localhost:5000
 ```
