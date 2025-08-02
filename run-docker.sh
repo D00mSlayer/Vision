@@ -4,7 +4,7 @@
 # This script sets up and runs the Vision app with Docker
 
 # Set default port if not provided
-PORT=${PORT:-5099}
+export PORT=${PORT:-5099}
 
 echo "🚀 Starting Vision Dashboard on port $PORT"
 echo "📝 Edit data/environments.yaml for live configuration updates"

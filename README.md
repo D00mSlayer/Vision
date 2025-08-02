@@ -58,6 +58,28 @@ No restart needed - just refresh your browser!
 
 ## ⚙️ Configuration
 
+### Port Configuration
+
+The application uses the `PORT` environment variable throughout:
+
+```bash
+# Set custom port for any deployment method
+export PORT=5099
+
+# For Docker
+PORT=5099 docker compose up -d
+
+# For direct Python
+PORT=5099 gunicorn --bind 0.0.0.0:5099 --workers 1 main:app
+```
+
+**Default ports:**
+- Direct Python: 5000  
+- Docker: Uses PORT environment variable (defaults to 5000)
+- All scripts: Honor PORT environment variable
+
+### Environment Data
+
 Edit `data/environments.yaml` to add your environments:
 
 ```yaml
