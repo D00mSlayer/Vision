@@ -8,6 +8,7 @@ angular.module('visionApp', [])
     $scope.error = null;
     $scope.refreshing = false;
     $scope.lastUpdated = new Date();
+    $scope.previewMode = false;
     
     // Load environment data
     function loadEnvironmentData() {
@@ -71,6 +72,11 @@ angular.module('visionApp', [])
                 console.error('Error refreshing health status:', error);
                 $scope.refreshing = false;
             });
+    };
+    
+    // Toggle preview mode
+    $scope.togglePreviewMode = function() {
+        $scope.previewMode = !$scope.previewMode;
     };
     
     // Initialize the application
