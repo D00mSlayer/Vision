@@ -2,51 +2,48 @@
 
 Vision is an internal web application that provides a centralized dashboard for monitoring product environments, health status, database configurations, and microservices. Perfect for development teams and executive displays.
 
-## 🚀 Quick Start - Choose Your Method
+## 🚀 Quick Start
 
-### Method 1: Docker (Recommended for Company Servers)
+**Super Simple Setup:**
+
 ```bash
-# 1. Clone the project
-git clone <your-repo-url>
-cd vision-dashboard
+# 1. Setup (creates virtual environment and installs everything)
+./setup.sh
 
-# 2. Run with custom port (easy way)
-PORT=5099 ./run-docker.sh
+# 2. Run the application
+./run.sh
 
-# OR manually:
+# Application will be available at http://localhost:5000
+```
+
+**Manual Setup:**
+
+```bash
+# 1. Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 2. Install dependencies
+pip install flask pyyaml requests pymssql gunicorn
+
+# 3. Start the application
+python main.py
+```
+
+**Custom Port:**
+
+```bash
+# Set custom port for any method
 export PORT=5099
-docker compose up -d
+./run.sh
 
 # Application will be available at http://localhost:5099
 ```
 
-### Method 2: Direct Python (Simple Setup)
-```bash
-# 1. Clone the project
-git clone <your-repo-url>
-cd vision-dashboard
-
-# 2. Install dependencies
-pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
-
-# 3. Set custom port (optional)
-export PORT=5099
-
-# 4. Set session secret
-export SESSION_SECRET="your-secure-32-character-key"
-
-# 5. Run the application
-gunicorn --bind 0.0.0.0:$PORT --workers 1 main:app
-```
-
 ## 🔧 Live Configuration Updates
 
-Your `data/environments.yaml` file is mounted for live updates:
-
-**Docker Setup**: Changes to `data/environments.yaml` reflect immediately with browser refresh
-**Direct Python**: Changes reflect immediately with browser refresh
-
-No restart needed - just refresh your browser!
+Edit `data/environments.yaml` and refresh your browser to see changes immediately.
+No restart needed!
 
 ## 📋 What You Get
 
@@ -66,17 +63,12 @@ The application uses the `PORT` environment variable throughout:
 # Set custom port for any deployment method
 export PORT=5099
 
-# For Docker
-PORT=5099 docker compose up -d
-
-# For direct Python
-PORT=5099 gunicorn --bind 0.0.0.0:5099 --workers 1 main:app
+# For any method
+export PORT=5099
+./run.sh
 ```
 
-**Default ports:**
-- Direct Python: 5000  
-- Docker: Uses PORT environment variable (defaults to 5000)
-- All scripts: Honor PORT environment variable
+**Default port:** 5000 (use PORT environment variable to change)
 
 ### Environment Data
 
@@ -129,52 +121,24 @@ After editing, just refresh your browser - changes appear immediately!
 ```bash
 # Use a different port
 export PORT=5099
-docker compose up -d
-# OR
-gunicorn --bind 0.0.0.0:5099 --workers 1 main:app
+./run.sh
 ```
 
 ### Missing Dependencies
 ```bash
-pip3 install --user flask pyyaml requests pyodbc pymssql gunicorn
+# Run setup again
+./setup.sh
 ```
 
-### Docker App Not Loading
-If your Docker container is running but app won't load:
-
-**Step 1: Debug the issue**
+### Virtual Environment Issues
 ```bash
-./debug-docker.sh
-```
-
-**Step 2: Fix the common issues**
-```bash
-# Stop the current container
-docker compose down
-
-# Make sure PORT is set and restart
-PORT=5099 docker compose up -d
-
-# Check if it's working
-curl http://localhost:5099/api/health
-```
-
-**Step 3: Quick fix (rebuild everything)**
-```bash
-./fix-docker.sh
-```
-
-**Step 4: Manual rebuild if needed**
-```bash
-docker compose down
-docker compose build --no-cache
-PORT=5099 docker compose up -d
+# Remove and recreate virtual environment
+rm -rf venv
+./setup.sh
 ```
 
 ### Configuration Not Updating
-- For Docker: Changes to `data/environments.yaml` are mounted and appear immediately
-- For Direct Python: Changes appear immediately  
-- Just refresh your browser after editing the file
+Changes to `data/environments.yaml` appear immediately - just refresh your browser
 
 ### Database Connection Issues
 - The app uses dual drivers (pyodbc + pymssql) for MS SQL

@@ -9,12 +9,12 @@ The application is built with a focus on low maintenance, using a simple archite
 ## Recent Updates (August 2025)
 
 ✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
-✓ **Complete Docker Deployment Package**: Created comprehensive deployment setup with Dockerfile, docker-compose.yml, and automated deployment scripts
+✓ **Simple Virtual Environment Setup**: Replaced Docker complexity with simple Python virtual environment and setup scripts
 ✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
 ✓ **Simplified Documentation**: Consolidated all deployment guides into single clear README.md with just two setup methods
-✓ **Standardized Port Configuration**: Unified PORT environment variable usage across all deployment methods (Docker, direct Python, scripts)
+✓ **Standardized Port Configuration**: Unified PORT environment variable usage across all deployment methods
 ✓ **Live Configuration Updates**: Implemented immediate reflection of data/environments.yaml changes with browser refresh
-✓ **Helper Scripts**: Created run-docker.sh, fix-docker.sh, and debug-docker.sh for streamlined deployment
+✓ **Simple Setup Scripts**: Created setup.sh and run.sh for one-command installation and execution
 
 ## User Preferences
 
