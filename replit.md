@@ -16,6 +16,8 @@ The application is built with a focus on low maintenance, using a simple archite
 ✓ **Background Health Monitoring**: Health checks run in background threads without blocking main thread
 ✓ **Port Configuration**: Honors PORT variable from .env file, works with Poetry commands and direct Python execution
 ✓ **Development Tools**: Added dev dependencies (pytest, black, flake8) for code quality and testing
+✓ **Bookmarks Feature**: Added complete bookmarks subpage with fuzzy search and typo tolerance for Jenkins jobs and dev links
+✓ **Improved UX Hierarchy**: Clear separation between Environments (with Monitor/Detailed views) and Bookmarks (independent subpage)
 
 ## User Preferences
 
@@ -28,7 +30,9 @@ Preferred communication style: Simple, everyday language.
 - Bootstrap 5.3.0 for responsive UI components and styling
 - Font Awesome 6.4.0 for iconography
 - Real-time health status updates with visual indicators
+- Two distinct tabbed subpages: Environments (with Monitor/Detailed views) and Bookmarks (independent)
 - Accordion-based layout for organizing environment information
+- Bookmark cards with fuzzy search supporting typos and partial matches
 
 **Backend Architecture**
 - Flask-based Python web server with minimal API endpoints

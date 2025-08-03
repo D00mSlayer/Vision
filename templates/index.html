@@ -25,17 +25,9 @@
                 <i class="fas fa-eye me-2"></i>Vision - Developer Dashboard
             </span>
             <div class="d-flex align-items-center">
-                <span class="badge bg-light text-dark me-2">
+                <span class="badge bg-light text-dark">
                     <i class="fas fa-clock me-1"></i>Last Updated: <span ng-bind="lastUpdated | date:'medium'"></span>
                 </span>
-                <button class="btn btn-outline-light btn-sm me-2" ng-click="togglePreviewMode()" ng-show="currentView === 'environments'">
-                    <i class="fas" ng-class="previewMode ? 'fa-list-ul' : 'fa-tv'"></i>
-                    <span ng-bind="previewMode ? 'Detailed View' : 'Monitor View'"></span>
-                </button>
-                <button class="btn btn-outline-light btn-sm" ng-click="refreshHealth()" ng-disabled="refreshing" ng-show="currentView === 'environments'">
-                    <i class="fas fa-sync-alt" ng-class="{'fa-spin': refreshing}"></i>
-                    <span ng-bind="refreshing ? 'Refreshing...' : 'Refresh'"></span>
-                </button>
             </div>
         </div>
     </nav>
@@ -44,16 +36,68 @@
     <div class="container-fluid">
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
-                <a class="nav-link" ng-class="{'active': currentView === 'environments'}" ng-click="setView('environments')" href="#">
-                    <i class="fas fa-server me-2"></i>Environments
+                <a class="nav-link d-flex align-items-center" ng-class="{'active': currentView === 'environments'}" ng-click="setView('environments')" href="#">
+                    <i class="fas fa-server me-2"></i>
+                    <div>
+                        <div>Environments</div>
+                        <small class="text-muted" ng-show="currentView === 'environments'">
+                            Monitor & Detailed Views Available
+                        </small>
+                    </div>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" ng-class="{'active': currentView === 'bookmarks'}" ng-click="setView('bookmarks')" href="#">
-                    <i class="fas fa-bookmark me-2"></i>Bookmarks
+                <a class="nav-link d-flex align-items-center" ng-class="{'active': currentView === 'bookmarks'}" ng-click="setView('bookmarks')" href="#">
+                    <i class="fas fa-bookmark me-2"></i>
+                    <div>
+                        <div>Bookmarks</div>
+                        <small class="text-muted" ng-show="currentView === 'bookmarks'">
+                            Jenkins Jobs & Development Links
+                        </small>
+                    </div>
                 </a>
             </li>
         </ul>
+        
+        <!-- Environment-specific controls -->
+        <div ng-show="currentView === 'environments'" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>Environment Health Dashboard
+                    </h5>
+                    <small class="text-muted">Real-time monitoring of microservices and databases</small>
+                </div>
+                <div class="btn-group" role="group">
+                    <button class="btn" ng-class="previewMode ? 'btn-outline-primary' : 'btn-primary'" ng-click="setViewMode('detailed')">
+                        <i class="fas fa-list-ul me-1"></i>Detailed View
+                    </button>
+                    <button class="btn" ng-class="previewMode ? 'btn-primary' : 'btn-outline-primary'" ng-click="setViewMode('monitor')">
+                        <i class="fas fa-tv me-1"></i>Monitor View
+                    </button>
+                    <button class="btn btn-outline-success" ng-click="refreshHealth()" ng-disabled="refreshing">
+                        <i class="fas fa-sync-alt" ng-class="{'fa-spin': refreshing}"></i>
+                        <span ng-bind="refreshing ? 'Refreshing...' : 'Refresh'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bookmarks-specific header -->
+        <div ng-show="currentView === 'bookmarks'" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">
+                        <i class="fas fa-bookmark me-2"></i>Development Bookmarks
+                    </h5>
+                    <small class="text-muted">Jenkins jobs, repositories, and development resources</small>
+                </div>
+                <div class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Use fuzzy search to find links even with typos
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container-fluid">

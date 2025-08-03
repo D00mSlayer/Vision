@@ -81,16 +81,21 @@ angular.module('visionApp', [])
             });
     };
     
-    // Toggle preview mode
-    $scope.togglePreviewMode = function() {
-        $scope.previewMode = !$scope.previewMode;
+    // Set view mode for environments
+    $scope.setViewMode = function(mode) {
+        $scope.previewMode = mode === 'monitor';
         
-        // Start auto-scroll when entering preview mode
+        // Start auto-scroll when entering monitor mode
         if ($scope.previewMode) {
             $scope.startAutoScroll();
         } else {
             $scope.stopAutoScroll();
         }
+    };
+    
+    // Toggle preview mode (kept for backwards compatibility)
+    $scope.togglePreviewMode = function() {
+        $scope.setViewMode($scope.previewMode ? 'detailed' : 'monitor');
     };
     
     // Auto-scroll functionality for monitor display

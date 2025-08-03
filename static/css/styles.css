@@ -659,3 +659,31 @@ a:hover {
 .nav-tabs .nav-link:hover {
     border-color: var(--bs-primary);
 }
+
+.nav-tabs .nav-link {
+    padding: 0.75rem 1.5rem;
+    min-height: 60px;
+}
+
+.nav-tabs .nav-link small {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Section headers */
+.section-header {
+    border-left: 4px solid var(--bs-primary);
+    padding-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* View mode buttons */
+.btn-group .btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-group .btn:hover {
+    transform: translateY(-1px);
+}
