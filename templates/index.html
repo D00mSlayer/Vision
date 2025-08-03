@@ -422,6 +422,15 @@
                         No bookmarks found for "{{ searchQuery }}". Try different keywords or check for typos.
                     </div>
                 </div>
+                
+                <!-- No Bookmarks at All -->
+                <div ng-if="!bookmarksLoading && bookmarks.length === 0 && !searchQuery" class="text-center">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No bookmarks available. Check if the data file is loaded properly.
+                        <br><small>Debug: bookmarks.length = {{ bookmarks.length }}, filteredBookmarks.length = {{ filteredBookmarks.length }}</small>
+                    </div>
+                </div>
 
                 <!-- Bookmarks Grid -->
                 <div ng-if="!bookmarksLoading && filteredBookmarks.length > 0" class="row">
