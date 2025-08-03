@@ -6,7 +6,7 @@ A simple web dashboard for monitoring product environments and health status.
 
 ```bash
 # 1. Install dependencies
-poetry install
+poetry install --no-root
 
 # 2. Start the app
 poetry run python main.py
