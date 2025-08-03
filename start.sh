@@ -159,11 +159,24 @@ echo ""
 echo "📂 Creating logs directory..."
 mkdir -p logs
 
-# Set environment variables
+# Load environment variables from .env file if it exists
+if [ -f ".env" ]; then
+    echo "📋 Loading environment variables from .env file..."
+    set -a  # Automatically export all variables
+    source .env
+    set +a  # Stop auto-exporting
+fi
+
+# Set environment variables with defaults
 export PORT=${PORT:-5000}
 export SESSION_SECRET=${SESSION_SECRET:-vision-dev-secret-change-in-production}
 export FLASK_ENV=${FLASK_ENV:-production}
 export FLASK_DEBUG=${FLASK_DEBUG:-false}
+
+echo "🔧 Configuration:"
+echo "   PORT: $PORT"
+echo "   FLASK_ENV: $FLASK_ENV"
+echo "   FLASK_DEBUG: $FLASK_DEBUG"
 
 echo ""
 echo "✅ Setup Complete!"

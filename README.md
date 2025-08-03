@@ -15,9 +15,20 @@ Vision is an internal web application that provides a centralized dashboard for 
 
 **Custom Port:**
 
+There are three ways to set a custom port:
+
 ```bash
-# Set custom port
+# Method 1: Set PORT environment variable before running
 PORT=5099 ./start.sh
+
+# Method 2: Export PORT and then run
+export PORT=5099
+./start.sh
+
+# Method 3: Create a .env file (copy from .env.example)
+cp .env.example .env
+# Edit .env file to set PORT=5099
+./start.sh
 
 # Application will be available at http://localhost:5099
 ```
@@ -146,6 +157,13 @@ sudo dnf install unixODBC-devel freetds-devel
 ### Virtual Environment Issues
 ```bash
 # The script automatically recreates the virtual environment
+./start.sh
+```
+
+### Script Permission Issues
+```bash
+# Fix script permissions
+chmod +x start.sh
 ./start.sh
 ```
 
