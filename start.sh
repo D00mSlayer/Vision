@@ -222,5 +222,7 @@ echo "💡 Edit data/environments.yaml for live configuration updates!"
 echo "🛑 Press Ctrl+C to stop the application"
 echo ""
 
-# Start the application
-exec python main.py
+# Start the application with virtual environment activated
+echo "📡 Starting Flask application..."
+source venv/bin/activate
+python main.py

@@ -1,0 +1,30 @@
+🔍 Checking port availability...
+✅ Port 5099 is available
+
+✅ Setup Complete!
+
+🚀 Starting Vision Dashboard...
+================================
+🌐 Access at: http://localhost:5099
+📊 Health API: http://localhost:5099/api/health
+📋 Environment API: http://localhost:5099/api/environments
+
+💡 Edit data/environments.yaml for live configuration updates!
+🛑 Press Ctrl+C to stop the application
+
+INFO:app:Environment data loaded successfully
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): dev.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): dev.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): auth.dev.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): auth.dev.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): orders.dev.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): orders.dev.producta.com:443
+DEBUG:app:MS SQL database health check failed for 192.168.1.10:1433/product_a_dev_db: (20009, b'DB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (192.168.1.10)\nNet-Lib error during No route to host (113)\nDB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (192.168.1.10)\nNet-Lib error during No route to host (113)\nDB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (192.168.1.10)\nNet-Lib error during No route to host (113)\nDB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (192.168.1.10)\nNet-Lib error during No route to host (113)\n')
+DEBUG:app:MS SQL database health check failed for 192.168.1.10:1433/product_a_dev_db: (20009, b'Unknown error')
+DEBUG:app:MS SQL database health check failed for db-replica.producta.com:1433/product_a_dev_db_replica: (20009, b'DB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (db-replica.producta.com)\nDB-Lib error message 20009, severity 9:\nUnable to connect: Adaptive Server is unavailable or does not exist (db-replica.producta.com)\n')
+DEBUG:app:MS SQL database health check failed for db-replica.producta.com:1433/product_a_dev_db_replica: (20009, b'Unknown error')
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): stg.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): stg.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): auth.stg.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): auth.stg.producta.com:443
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): orders.stg.producta.com:443
