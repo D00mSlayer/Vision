@@ -12,8 +12,8 @@ The application is built with a focus on low maintenance, using a simple archite
 ✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
 ✓ **Poetry Package Management**: Migrated to Poetry for dependency management with comprehensive pyproject.toml
 ✓ **Single README**: Completely rewritten documentation with Poetry-based setup instructions
-✓ **Poetry Scripts**: Added `poetry run start` command for easy application startup
-✓ **Clean Architecture**: Removed redundant app.run calls, now properly configured with main() function entry point
+✓ **Non-Blocking Startup**: Fixed Flask app to start immediately without waiting for health checks
+✓ **Background Health Monitoring**: Health checks run in background threads without blocking main thread
 ✓ **Port Configuration**: Honors PORT variable from .env file, works with Poetry commands and direct Python execution
 ✓ **Development Tools**: Added dev dependencies (pytest, black, flake8) for code quality and testing
 

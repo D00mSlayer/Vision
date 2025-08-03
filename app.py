@@ -175,10 +175,21 @@ def initialize_app():
     # Start health check worker in background thread
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    # Skip initial health check to start server faster
     app.logger.info("Background health monitoring started")
 
-# Initialize the app immediately
+# Initialize app with threading to prevent blocking
+def delayed_health_check():
+    """Start initial health check after Flask server is running"""
+    import time
+    time.sleep(5)  # Wait 5 seconds for server to fully start
+    app.logger.info("Starting initial health check...")
+    update_health_status()
+
+# Initialize the app immediately but defer health checks
 initialize_app()
+
+# Start delayed health check in background
+delayed_health_thread = threading.Thread(target=delayed_health_check, daemon=True)
+delayed_health_thread.start()
 
 # Remove redundant app.run - use 'flask run' or main.py instead
