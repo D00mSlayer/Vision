@@ -9,14 +9,11 @@ The application is built with a focus on low maintenance, using a simple archite
 ## Recent Updates (August 2025)
 
 ✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
-✓ **Simple Virtual Environment Setup**: Replaced Docker complexity with simple Python virtual environment and setup scripts
 ✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
-✓ **Simplified Documentation**: Consolidated all deployment guides into single clear README.md with just two setup methods
-✓ **Standardized Port Configuration**: Unified PORT environment variable usage across all deployment methods
-✓ **Live Configuration Updates**: Implemented immediate reflection of data/environments.yaml changes with browser refresh
-✓ **Single Setup Script**: Created comprehensive start.sh that handles prerequisites, virtual environment, dependencies, and startup in one command
-✓ **Improved Signal Handling**: Fixed Ctrl+C signal handling for graceful application shutdown
-✓ **Auto-Permission Management**: Script automatically maintains executable permissions to prevent chmod issues
+✓ **Ultra-Simple Local Setup**: Removed all complex deployment scripts and Docker - now just "pip install" + "python run-local.py"
+✓ **Single README**: Completely rewritten documentation with only 3 steps to run locally
+✓ **Direct Python Execution**: Created run-local.py that handles all environment setup automatically
+✓ **Port 5099 Default**: Configured to run on port 5099 by default for local development
 
 ## User Preferences
 
