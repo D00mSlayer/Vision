@@ -9,7 +9,7 @@ The application is built with a focus on low maintenance, using a simple archite
 ## Recent Updates (August 2025)
 
 ✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
-✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
+✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively using ODBC Driver 18 with encryption
 ✓ **Poetry Package Management**: Migrated to Poetry for dependency management with comprehensive pyproject.toml
 ✓ **Single README**: Completely rewritten documentation with Poetry-based setup instructions
 ✓ **Non-Blocking Startup**: Fixed Flask app to start immediately without waiting for health checks
@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 
 **Health Monitoring System**
 - Automated URL health checking with 5-second timeouts
-- MS SQL Server database connectivity monitoring with dual-driver support (pyodbc + pymssql fallback)
+- MS SQL Server database connectivity monitoring using ODBC Driver 18 with encryption
 - Background thread for continuous health status updates (30-second intervals)
 - HTTP status code validation (200 = healthy) and MS SQL database query validation
 - Real-time health indicator updates in both detailed and monitor views with enhanced vibrant colors
@@ -69,8 +69,7 @@ Preferred communication style: Simple, everyday language.
 - Flask - Web framework for API endpoints and template rendering
 - PyYAML - YAML file parsing and data loading
 - Requests - HTTP client for health check functionality
-- pyodbc - Primary MS SQL Server ODBC driver for database health monitoring
-- pymssql - Fallback MS SQL Server driver for database connectivity
+- pyodbc - MS SQL Server ODBC Driver 18 for database health monitoring with encryption
 - Gunicorn - WSGI server for production deployment
 
 **Deployment Tools**
