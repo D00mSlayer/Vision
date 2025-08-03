@@ -10,6 +10,13 @@ angular.module('visionApp', [])
     $scope.lastUpdated = new Date();
     $scope.previewMode = false;
     
+    // Bookmarks functionality
+    $scope.currentView = 'environments'; // Default to environments view
+    $scope.bookmarks = [];
+    $scope.filteredBookmarks = [];
+    $scope.searchQuery = '';
+    $scope.bookmarksLoading = false;
+    
     // Load environment data
     function loadEnvironmentData() {
         $scope.loading = true;
@@ -209,6 +216,65 @@ angular.module('visionApp', [])
         });
         
         return total > 0 ? Math.round((online / total) * 100) : 0;
+    };
+    
+    // View management
+    $scope.setView = function(view) {
+        $scope.currentView = view;
+        
+        if (view === 'bookmarks') {
+            loadBookmarks();
+        } else if (view === 'environments') {
+            // Stop auto-scroll when switching away from monitor mode
+            if (!$scope.previewMode) {
+                $scope.stopAutoScroll();
+            }
+        }
+    };
+    
+    // Load bookmarks data
+    function loadBookmarks() {
+        $scope.bookmarksLoading = true;
+        
+        $http.get('/api/bookmarks')
+            .then(function(response) {
+                $scope.bookmarks = response.data.bookmarks || [];
+                $scope.filteredBookmarks = $scope.bookmarks;
+                $scope.bookmarksLoading = false;
+                console.log('Bookmarks loaded:', response.data);
+            })
+            .catch(function(error) {
+                console.error('Error loading bookmarks:', error);
+                $scope.bookmarksLoading = false;
+                $scope.bookmarks = [];
+                $scope.filteredBookmarks = [];
+            });
+    }
+    
+    // Search bookmarks with fuzzy matching
+    $scope.searchBookmarks = function() {
+        if (!$scope.searchQuery || $scope.searchQuery.trim() === '') {
+            $scope.filteredBookmarks = $scope.bookmarks;
+            return;
+        }
+        
+        // Use server-side fuzzy search
+        $http.get('/api/bookmarks/search?q=' + encodeURIComponent($scope.searchQuery.trim()))
+            .then(function(response) {
+                $scope.filteredBookmarks = response.data.bookmarks || [];
+                console.log('Search results:', response.data);
+            })
+            .catch(function(error) {
+                console.error('Error searching bookmarks:', error);
+                // Fallback to showing all bookmarks
+                $scope.filteredBookmarks = $scope.bookmarks;
+            });
+    };
+    
+    // Clear search
+    $scope.clearSearch = function() {
+        $scope.searchQuery = '';
+        $scope.filteredBookmarks = $scope.bookmarks;
     };
     
     // Initialize the application

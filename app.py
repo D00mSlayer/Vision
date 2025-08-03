@@ -4,7 +4,7 @@ import logging
 import requests
 import pyodbc
 import pymssql
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from urllib.parse import urlparse
 import threading
 import time
@@ -39,6 +39,83 @@ def load_environment_data():
     except Exception as e:
         app.logger.error(f"Error loading environment data: {e}")
         return {"product_versions": []}
+
+def load_bookmarks_data():
+    """Load bookmarks data from YAML file - fresh every time"""
+    try:
+        with open('data/bookmarks.yaml', 'r') as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        app.logger.error(f"Error loading bookmarks data: {e}")
+        return {"bookmarks": []}
+
+def fuzzy_search_bookmarks(query, bookmarks):
+    """Perform fuzzy search on bookmarks with typo tolerance"""
+    if not query:
+        return bookmarks
+    
+    import re
+    from difflib import SequenceMatcher
+    
+    query = query.lower().strip()
+    results = []
+    
+    def similarity_score(a, b):
+        """Calculate similarity between two strings"""
+        return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+    
+    def contains_fuzzy(text, search_term):
+        """Check if text contains search term with fuzzy matching"""
+        text = text.lower()
+        # Direct substring match gets highest score
+        if search_term in text:
+            return 1.0
+        
+        # Check for partial word matches
+        words = text.split()
+        best_score = 0
+        for word in words:
+            score = similarity_score(word, search_term)
+            if score > best_score:
+                best_score = score
+        
+        return best_score
+    
+    for bookmark in bookmarks:
+        max_score = 0
+        
+        # Search in name
+        name_score = contains_fuzzy(bookmark.get('name', ''), query)
+        max_score = max(max_score, name_score)
+        
+        # Search in description
+        desc_score = contains_fuzzy(bookmark.get('description', ''), query)
+        max_score = max(max_score, desc_score)
+        
+        # Search in main URL
+        url_score = contains_fuzzy(bookmark.get('main_url', ''), query)
+        max_score = max(max_score, url_score)
+        
+        # Search in git link
+        git_score = contains_fuzzy(bookmark.get('git_link', ''), query)
+        max_score = max(max_score, git_score)
+        
+        # Search in sub URLs
+        for sub_url in bookmark.get('sub_urls', []):
+            sub_name_score = contains_fuzzy(sub_url.get('name', ''), query)
+            sub_url_score = contains_fuzzy(sub_url.get('url', ''), query)
+            max_score = max(max_score, sub_name_score, sub_url_score)
+        
+        # Include if similarity is above threshold (0.4 for typo tolerance)
+        if max_score >= 0.4:
+            results.append({
+                'bookmark': bookmark,
+                'score': max_score
+            })
+    
+    # Sort by relevance score (highest first)
+    results.sort(key=lambda x: x['score'], reverse=True)
+    return [result['bookmark'] for result in results]
 
 def check_url_health(url):
     """Check if a URL is reachable"""
@@ -129,6 +206,24 @@ def get_environments():
     """API endpoint to get environment data - always fresh"""
     environment_data = load_environment_data()
     return jsonify(environment_data)
+
+@app.route('/api/bookmarks')
+def get_bookmarks():
+    """API endpoint to get all bookmarks"""
+    bookmarks_data = load_bookmarks_data()
+    return jsonify(bookmarks_data)
+
+@app.route('/api/bookmarks/search')
+def search_bookmarks():
+    """API endpoint to search bookmarks with fuzzy matching"""
+    query = request.args.get('q', '')
+    bookmarks_data = load_bookmarks_data()
+    
+    if query:
+        filtered_bookmarks = fuzzy_search_bookmarks(query, bookmarks_data.get('bookmarks', []))
+        return jsonify({'bookmarks': filtered_bookmarks, 'query': query})
+    else:
+        return jsonify(bookmarks_data)
 
 @app.route('/api/health')
 def get_health_status():

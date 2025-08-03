@@ -1,0 +1,58 @@
+bookmarks:
+  - name: "Product A CI/CD Pipeline"
+    main_url: "https://jenkins.company.com/job/product-a-pipeline/"
+    description: "Main CI/CD pipeline for Product A deployment and testing"
+    git_link: "https://github.com/company/product-a-jenkins"
+    sub_urls:
+      - name: "Dev Deploy"
+        url: "https://jenkins.company.com/job/product-a-pipeline/job/deploy-dev/"
+      - name: "Staging Deploy" 
+        url: "https://jenkins.company.com/job/product-a-pipeline/job/deploy-staging/"
+      - name: "Production Deploy"
+        url: "https://jenkins.company.com/job/product-a-pipeline/job/deploy-prod/"
+
+  - name: "Database Migration Jobs"
+    main_url: "https://jenkins.company.com/job/db-migrations/"
+    description: "Database schema migrations and data updates for all environments"
+    git_link: "https://github.com/company/db-migration-scripts"
+    sub_urls:
+      - name: "Dev DB Migration"
+        url: "https://jenkins.company.com/job/db-migrations/job/dev-migrate/"
+      - name: "Prod DB Migration"
+        url: "https://jenkins.company.com/job/db-migrations/job/prod-migrate/"
+
+  - name: "Product B Build and Test"
+    main_url: "https://jenkins.company.com/job/product-b-build/"
+    description: "Automated build, unit tests, and integration tests for Product B microservices"
+    git_link: "https://github.com/company/product-b-build-config"
+    sub_urls:
+      - name: "Unit Tests"
+        url: "https://jenkins.company.com/job/product-b-build/job/unit-tests/"
+      - name: "Integration Tests"
+        url: "https://jenkins.company.com/job/product-b-build/job/integration-tests/"
+
+  - name: "Infrastructure Provisioning"
+    main_url: "https://jenkins.company.com/job/infrastructure/"
+    description: "Terraform and Ansible jobs for provisioning and managing cloud infrastructure"
+    git_link: "https://github.com/company/infrastructure-automation"
+
+  - name: "Security Scans"
+    main_url: "https://jenkins.company.com/job/security-scans/"
+    description: "Automated security scanning, vulnerability assessment, and compliance checks"
+    sub_urls:
+      - name: "SAST Scan"
+        url: "https://jenkins.company.com/job/security-scans/job/sast/"
+      - name: "DAST Scan"
+        url: "https://jenkins.company.com/job/security-scans/job/dast/"
+      - name: "Dependency Check"
+        url: "https://jenkins.company.com/job/security-scans/job/dependency-check/"
+
+  - name: "Backup and Recovery"
+    main_url: "https://jenkins.company.com/job/backup-recovery/"
+    description: "Database backups, application data backup, and disaster recovery procedures"
+    git_link: "https://github.com/company/backup-scripts"
+    sub_urls:
+      - name: "Daily Backup"
+        url: "https://jenkins.company.com/job/backup-recovery/job/daily-backup/"
+      - name: "Recovery Test"
+        url: "https://jenkins.company.com/job/backup-recovery/job/recovery-test/"

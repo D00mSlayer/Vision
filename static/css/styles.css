@@ -617,3 +617,45 @@ a:hover {
 .preview-mode::-webkit-scrollbar {
     display: none;
 }
+
+/* Bookmark Cards */
+.bookmark-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid #dee2e6;
+}
+
+.bookmark-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.bookmark-card .card-header {
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.bookmark-card .btn {
+    word-break: break-all;
+    white-space: normal;
+    text-align: left;
+}
+
+.bookmark-card .btn:hover {
+    text-decoration: none;
+}
+
+/* Search functionality */
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Navigation tabs */
+.nav-tabs .nav-link.active {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--bs-primary);
+}

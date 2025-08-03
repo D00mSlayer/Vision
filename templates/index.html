@@ -22,23 +22,39 @@
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">
-                <i class="fas fa-eye me-2"></i>Vision - Environment Information
+                <i class="fas fa-eye me-2"></i>Vision - Developer Dashboard
             </span>
             <div class="d-flex align-items-center">
                 <span class="badge bg-light text-dark me-2">
                     <i class="fas fa-clock me-1"></i>Last Updated: <span ng-bind="lastUpdated | date:'medium'"></span>
                 </span>
-                <button class="btn btn-outline-light btn-sm me-2" ng-click="togglePreviewMode()">
+                <button class="btn btn-outline-light btn-sm me-2" ng-click="togglePreviewMode()" ng-show="currentView === 'environments'">
                     <i class="fas" ng-class="previewMode ? 'fa-list-ul' : 'fa-tv'"></i>
                     <span ng-bind="previewMode ? 'Detailed View' : 'Monitor View'"></span>
                 </button>
-                <button class="btn btn-outline-light btn-sm" ng-click="refreshHealth()" ng-disabled="refreshing">
+                <button class="btn btn-outline-light btn-sm" ng-click="refreshHealth()" ng-disabled="refreshing" ng-show="currentView === 'environments'">
                     <i class="fas fa-sync-alt" ng-class="{'fa-spin': refreshing}"></i>
                     <span ng-bind="refreshing ? 'Refreshing...' : 'Refresh'"></span>
                 </button>
             </div>
         </div>
     </nav>
+
+    <!-- Navigation Tabs -->
+    <div class="container-fluid">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" ng-class="{'active': currentView === 'environments'}" ng-click="setView('environments')" href="#">
+                    <i class="fas fa-server me-2"></i>Environments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" ng-class="{'active': currentView === 'bookmarks'}" ng-click="setView('bookmarks')" href="#">
+                    <i class="fas fa-bookmark me-2"></i>Bookmarks
+                </a>
+            </li>
+        </ul>
+    </div>
 
     <div class="container-fluid">
         <!-- Loading State -->
@@ -57,6 +73,9 @@
 
         <!-- Main Content -->
         <div ng-if="!loading && !error">
+            
+            <!-- Environments View -->
+            <div ng-show="currentView === 'environments'">
             <!-- Preview Mode - Monitor View -->
             <div ng-if="previewMode" class="preview-mode">
                 <!-- Overall Health Summary -->
@@ -312,6 +331,121 @@
                 </div>
             </div>
             </div>
+            <!-- End Environments View -->
+            
+            <!-- Bookmarks View -->
+            <div ng-show="currentView === 'bookmarks'">
+                <!-- Search Bar -->
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="Search bookmarks... (supports typos and partial matches)"
+                                   ng-model="searchQuery"
+                                   ng-change="searchBookmarks()"
+                                   ng-keyup="searchBookmarks()">
+                            <button class="btn btn-outline-secondary" 
+                                    type="button" 
+                                    ng-click="clearSearch()"
+                                    ng-show="searchQuery">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <small class="form-text text-muted" ng-show="searchQuery">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Showing {{ filteredBookmarks.length }} of {{ bookmarks.length }} bookmarks
+                            <span ng-show="searchQuery.length > 0"> for "{{ searchQuery }}"</span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Loading State for Bookmarks -->
+                <div ng-if="bookmarksLoading" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading bookmarks...</span>
+                    </div>
+                    <p class="mt-2">Loading bookmarks...</p>
+                </div>
+
+                <!-- No Results -->
+                <div ng-if="!bookmarksLoading && filteredBookmarks.length === 0 && searchQuery" class="text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-search me-2"></i>
+                        No bookmarks found for "{{ searchQuery }}". Try different keywords or check for typos.
+                    </div>
+                </div>
+
+                <!-- Bookmarks Grid -->
+                <div ng-if="!bookmarksLoading && filteredBookmarks.length > 0" class="row">
+                    <div ng-repeat="bookmark in filteredBookmarks" class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card h-100 bookmark-card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-bookmark me-2"></i>
+                                    {{ bookmark.name }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ bookmark.description }}</p>
+                                
+                                <!-- Main URL -->
+                                <div class="mb-3">
+                                    <label class="fw-bold">
+                                        <i class="fas fa-link me-1"></i>Main URL:
+                                    </label>
+                                    <div>
+                                        <a ng-href="{{ bookmark.main_url }}" 
+                                           target="_blank" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            {{ bookmark.main_url }}
+                                            <i class="fas fa-external-link-alt ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Git Link -->
+                                <div class="mb-3" ng-if="bookmark.git_link">
+                                    <label class="fw-bold">
+                                        <i class="fab fa-git-alt me-1"></i>Git Repository:
+                                    </label>
+                                    <div>
+                                        <a ng-href="{{ bookmark.git_link }}" 
+                                           target="_blank" 
+                                           class="btn btn-outline-success btn-sm">
+                                            {{ bookmark.git_link }}
+                                            <i class="fab fa-github ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Sub URLs -->
+                                <div ng-if="bookmark.sub_urls && bookmark.sub_urls.length > 0">
+                                    <label class="fw-bold">
+                                        <i class="fas fa-sitemap me-1"></i>Related Links:
+                                    </label>
+                                    <ul class="list-unstyled mt-2">
+                                        <li ng-repeat="subUrl in bookmark.sub_urls" class="mb-2">
+                                            <a ng-href="{{ subUrl.url }}" 
+                                               target="_blank" 
+                                               class="btn btn-outline-secondary btn-sm w-100 text-start">
+                                                <i class="fas fa-arrow-right me-2"></i>
+                                                {{ subUrl.name }}
+                                                <i class="fas fa-external-link-alt ms-1 float-end"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Bookmarks View -->
+            
         </div>
     </div>
 
