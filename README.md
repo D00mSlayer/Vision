@@ -172,10 +172,18 @@ sudo dnf install unixODBC-devel freetds-devel
 ```
 
 ### Script Permission Issues
+The script now automatically fixes its own permissions, but if needed:
 ```bash
-# Fix script permissions
+# Fix script permissions manually
 chmod +x start.sh
 ./start.sh
+```
+
+### Stopping the Application
+```bash
+# The script now handles Ctrl+C properly:
+# Press Ctrl+C once to gracefully stop the application
+# The script will show: "🛑 Stopping Vision Dashboard..." and clean up processes
 ```
 
 ### Configuration Not Updating

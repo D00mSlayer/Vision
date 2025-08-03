@@ -1,4 +1,6 @@
 #!/bin/bash
+# Ensure this script maintains executable permissions
+chmod +x "$0" 2>/dev/null || true
 
 # Vision Dashboard - Complete Setup and Run Script
 # This script handles everything: prerequisites, virtual environment, dependencies, and startup
@@ -225,4 +227,15 @@ echo ""
 # Start the application with virtual environment activated
 echo "📡 Starting Flask application..."
 source venv/bin/activate
-python main.py
+
+# Handle Ctrl+C gracefully
+trap 'echo ""; echo "🛑 Stopping Vision Dashboard..."; kill $PID 2>/dev/null; exit 0' INT
+
+# Start Python in background and capture PID
+python main.py &
+PID=$!
+
+# Wait for the process and handle signals
+echo "🔄 Vision Dashboard running (PID: $PID)"
+echo "🛑 Press Ctrl+C to stop"
+wait $PID

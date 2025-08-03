@@ -15,6 +15,8 @@ The application is built with a focus on low maintenance, using a simple archite
 ✓ **Standardized Port Configuration**: Unified PORT environment variable usage across all deployment methods
 ✓ **Live Configuration Updates**: Implemented immediate reflection of data/environments.yaml changes with browser refresh
 ✓ **Single Setup Script**: Created comprehensive start.sh that handles prerequisites, virtual environment, dependencies, and startup in one command
+✓ **Improved Signal Handling**: Fixed Ctrl+C signal handling for graceful application shutdown
+✓ **Auto-Permission Management**: Script automatically maintains executable permissions to prevent chmod issues
 
 ## User Preferences
 
