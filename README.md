@@ -9,12 +9,19 @@ A simple web dashboard for monitoring product environments and health status.
 pip install flask pyyaml requests pymssql
 ```
 
-**Step 2: Run the application**
+**Step 2: Set your port in .env file**
 ```bash
-python run-local.py
+echo "PORT=5099" > .env
 ```
 
-**Step 3: Open your browser**
+**Step 3: Run the application**
+```bash
+export FLASK_APP=app.py
+flask run --host=0.0.0.0 --port=5099
+```
+*Note: The app reads PORT from your .env file but flask run needs --port specified*
+
+**Step 4: Open your browser**
 Go to: http://localhost:5099
 
 That's it! The app will start monitoring your environments automatically.
@@ -34,7 +41,9 @@ Edit `data/environments.yaml` to add your own environments. Changes take effect 
 
 **If port 5099 is busy:**
 ```bash
-PORT=8080 python run-local.py
+echo "PORT=8080" > .env
+export FLASK_APP=app.py
+flask run --host=0.0.0.0 --port=8080
 ```
 
 **If you get import errors:**

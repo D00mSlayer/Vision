@@ -10,10 +10,11 @@ The application is built with a focus on low maintenance, using a simple archite
 
 ✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
 ✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
-✓ **Ultra-Simple Local Setup**: Removed all complex deployment scripts and Docker - now just "pip install" + "python run-local.py"
-✓ **Single README**: Completely rewritten documentation with only 3 steps to run locally
-✓ **Direct Python Execution**: Created run-local.py that handles all environment setup automatically
-✓ **Port 5099 Default**: Configured to run on port 5099 by default for local development
+✓ **Ultra-Simple Local Setup**: Removed all complex deployment scripts and Docker - now just "pip install" + "flask run"
+✓ **Single README**: Completely rewritten documentation with only 4 simple steps to run locally
+✓ **Standard Flask Commands**: Uses standard `flask run` command with .env file support for port configuration
+✓ **Clean Architecture**: Removed redundant app.run calls, now properly configured for flask run and main.py execution
+✓ **Port Configuration**: Honors PORT variable from .env file, works with both flask run and python main.py
 
 ## User Preferences
 

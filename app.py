@@ -178,5 +178,4 @@ def initialize_app():
 # Initialize the app immediately
 initialize_app()
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+# Remove redundant app.run - use 'flask run' or main.py instead
