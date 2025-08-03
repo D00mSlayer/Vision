@@ -136,6 +136,7 @@ pip install flask>=2.3.0
 pip install pyyaml>=6.0
 pip install requests>=2.31.0
 pip install gunicorn>=21.0.0
+pip install python-dotenv>=1.0.0
 
 # Try to install MS SQL drivers
 echo ""
