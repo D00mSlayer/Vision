@@ -4,31 +4,42 @@ A simple web dashboard for monitoring product environments and health status.
 
 ## Quick Start
 
-**Step 1: Install Python dependencies**
+**Step 1: Install Poetry (if not already installed)**
 ```bash
-pip install flask pyyaml requests pymssql
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
-**Step 2: Set your port in .env file**
+**Step 2: Install dependencies with Poetry**
+```bash
+poetry install
+```
+
+**Step 3: Set your port in .env file**
 ```bash
 echo "PORT=5099" > .env
 ```
 
-**Step 3: Run the application**
+**Step 4: Run the application**
 
-**Option A: Using python main.py (Recommended - better Ctrl+C handling)**
+**Option A: Using Poetry script (Recommended)**
 ```bash
+poetry run start
+```
+
+**Option B: Using Poetry shell and Python**
+```bash
+poetry shell
 python main.py
 ```
 
-**Option B: Using flask run**
+**Option C: Using Flask directly**
 ```bash
+poetry shell
 export FLASK_APP=app.py
 flask run --host=0.0.0.0 --port=5099
 ```
-*Note: flask run may not respond to Ctrl+C properly. Use python main.py for better control.*
 
-**Step 4: Open your browser**
+**Step 5: Open your browser**
 Go to: http://localhost:5099
 
 That's it! The app will start monitoring your environments automatically.
@@ -49,13 +60,13 @@ Edit `data/environments.yaml` to add your own environments. Changes take effect 
 **If port 5099 is busy:**
 ```bash
 echo "PORT=8080" > .env
-python main.py
+poetry run start
 ```
 
 **If you get import errors:**
-Make sure you installed the dependencies:
+Make sure you installed the dependencies with Poetry:
 ```bash
-pip install flask pyyaml requests pymssql python-dotenv
+poetry install
 ```
 
 **If Ctrl+C doesn't stop the app:**
@@ -69,3 +80,25 @@ kill [PID]
 
 **If health checks fail:**
 This is normal - the app tries to connect to example servers that don't exist. Replace the URLs in `data/environments.yaml` with your real servers.
+
+## Development
+
+**Install development dependencies:**
+```bash
+poetry install --with dev
+```
+
+**Format code:**
+```bash
+poetry run black .
+```
+
+**Lint code:**
+```bash
+poetry run flake8 .
+```
+
+**Run tests:**
+```bash
+poetry run pytest
+```

@@ -13,7 +13,8 @@ def signal_handler(sig, frame):
             thread.join(timeout=1)
     sys.exit(0)
 
-if __name__ == '__main__':
+def main():
+    """Main entry point for the application"""
     # Set up signal handler for Ctrl+C
     signal.signal(signal.SIGINT, signal_handler)
     
@@ -31,3 +32,6 @@ if __name__ == '__main__':
     finally:
         print('🔄 Cleaning up...')
         os._exit(0)
+
+if __name__ == '__main__':
+    main()

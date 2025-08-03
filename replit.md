@@ -10,11 +10,12 @@ The application is built with a focus on low maintenance, using a simple archite
 
 ✓ **Enhanced Health Indicators**: Implemented vibrant neon colors (#00ff80 green, #ff1744 red, #ff9500 orange) with glow effects removed for cleaner appearance
 ✓ **MS SQL Server Migration**: Fully migrated from PostgreSQL/MySQL to MS SQL exclusively with dual-driver support (pyodbc + pymssql)
-✓ **Ultra-Simple Local Setup**: Removed all complex deployment scripts and Docker - now just "pip install" + "flask run"
-✓ **Single README**: Completely rewritten documentation with only 4 simple steps to run locally
-✓ **Standard Flask Commands**: Uses standard `flask run` command with .env file support for port configuration
-✓ **Clean Architecture**: Removed redundant app.run calls, now properly configured for flask run and main.py execution
-✓ **Port Configuration**: Honors PORT variable from .env file, works with both flask run and python main.py
+✓ **Poetry Package Management**: Migrated to Poetry for dependency management with comprehensive pyproject.toml
+✓ **Single README**: Completely rewritten documentation with Poetry-based setup instructions
+✓ **Poetry Scripts**: Added `poetry run start` command for easy application startup
+✓ **Clean Architecture**: Removed redundant app.run calls, now properly configured with main() function entry point
+✓ **Port Configuration**: Honors PORT variable from .env file, works with Poetry commands and direct Python execution
+✓ **Development Tools**: Added dev dependencies (pytest, black, flake8) for code quality and testing
 
 ## User Preferences
 

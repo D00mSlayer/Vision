@@ -1,16 +1,29 @@
-[project]
-name = "repl-nix-workspace"
+[tool.poetry]
+name = "vision-dashboard"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.11"
-dependencies = [
-    "email-validator>=2.2.0",
-    "flask>=3.1.1",
-    "flask-sqlalchemy>=3.1.1",
-    "gunicorn>=23.0.0",
-    "pymssql>=2.3.7",
-    "pyodbc>=5.2.0",
-    "python-dotenv>=1.1.1",
-    "pyyaml>=6.0.2",
-    "requests>=2.32.4",
-]
+description = "Environment monitoring dashboard for product environments and health status"
+authors = ["Development Team <dev@company.com>"]
+readme = "README.md"
+packages = [{include = "vision_dashboard", from = "."}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+flask = "^3.1.1"
+pyyaml = "^6.0.2"
+requests = "^2.32.4"
+pymssql = "^2.3.7"
+pyodbc = "^5.2.0"
+python-dotenv = "^1.1.1"
+gunicorn = "^23.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+black = "^23.0.0"
+flake8 = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "main:main"
