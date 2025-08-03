@@ -14,7 +14,7 @@ The application is built with a focus on low maintenance, using a simple archite
 ✓ **Simplified Documentation**: Consolidated all deployment guides into single clear README.md with just two setup methods
 ✓ **Standardized Port Configuration**: Unified PORT environment variable usage across all deployment methods
 ✓ **Live Configuration Updates**: Implemented immediate reflection of data/environments.yaml changes with browser refresh
-✓ **Simple Setup Scripts**: Created setup.sh and run.sh for one-command installation and execution
+✓ **Single Setup Script**: Created comprehensive start.sh that handles prerequisites, virtual environment, dependencies, and startup in one command
 
 ## User Preferences
 

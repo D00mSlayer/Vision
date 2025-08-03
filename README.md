@@ -4,41 +4,31 @@ Vision is an internal web application that provides a centralized dashboard for 
 
 ## 🚀 Quick Start
 
-**Super Simple Setup:**
+**One-Command Setup & Run:**
 
 ```bash
-# 1. Setup (creates virtual environment and installs everything)
-./setup.sh
-
-# 2. Run the application
-./run.sh
+# Download, setup, and start everything
+./start.sh
 
 # Application will be available at http://localhost:5000
-```
-
-**Manual Setup:**
-
-```bash
-# 1. Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# 2. Install dependencies
-pip install flask pyyaml requests pymssql gunicorn
-
-# 3. Start the application
-python main.py
 ```
 
 **Custom Port:**
 
 ```bash
-# Set custom port for any method
-export PORT=5099
-./run.sh
+# Set custom port
+PORT=5099 ./start.sh
 
 # Application will be available at http://localhost:5099
 ```
+
+**What the script does:**
+- ✅ Checks Python 3.8+ and pip3
+- ✅ Verifies system dependencies for MS SQL drivers
+- ✅ Creates clean virtual environment
+- ✅ Installs all Python packages
+- ✅ Creates necessary directories
+- ✅ Starts the application
 
 ## 🔧 Live Configuration Updates
 
@@ -120,21 +110,43 @@ After editing, just refresh your browser - changes appear immediately!
 ### Port Already in Use
 ```bash
 # Use a different port
-export PORT=5099
-./run.sh
+PORT=5099 ./start.sh
+```
+
+### Prerequisites (Linux)
+
+The script will check and guide you to install:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install python3 python3-pip python3-venv build-essential unixodbc-dev freetds-dev
+```
+
+**CentOS/RHEL:**
+```bash
+sudo yum install python3 python3-pip
+sudo yum groupinstall 'Development Tools'
+sudo yum install unixODBC-devel freetds-devel
+```
+
+**Fedora:**
+```bash
+sudo dnf install python3 python3-pip
+sudo dnf groupinstall 'Development Tools'
+sudo dnf install unixODBC-devel freetds-devel
 ```
 
 ### Missing Dependencies
 ```bash
-# Run setup again
-./setup.sh
+# Re-run the complete setup
+./start.sh
 ```
 
 ### Virtual Environment Issues
 ```bash
-# Remove and recreate virtual environment
-rm -rf venv
-./setup.sh
+# The script automatically recreates the virtual environment
+./start.sh
 ```
 
 ### Configuration Not Updating
@@ -155,54 +167,6 @@ Changes to `data/environments.yaml` appear immediately - just refresh your brows
 ---
 
 **That's it! Vision Dashboard is ready to impress your team and management with real-time infrastructure monitoring.**
-python -c "import pymssql; print('pymssql available')"
-```
-
-#### 3. Health Checks Not Working
-```bash
-# Check network connectivity
-ping your-environment-url.com
-
-# Verify SSL certificates
-openssl s_client -connect your-environment-url.com:443
-
-# Check application logs
-tail -f /var/log/vision-dashboard/app.log
-```
-
-#### 4. UI Not Loading
-```bash
-# Check static file serving
-curl http://localhost:5000/static/css/styles.css
-
-# Verify AngularJS loading
-curl http://localhost:5000/static/js/app.js
-
-# Check browser console for JavaScript errors
-```
-
-### Performance Optimization
-
-#### For Large Environments (50+ services)
-1. **Increase Health Check Intervals**:
-   ```python
-   # In app.py, modify:
-   time.sleep(60)  # Change from 30 to 60 seconds
-   ```
-
-2. **Optimize Database Connections**:
-   ```python
-   # Use connection pooling
-   connection_pool = ConnectionPool(...)
-   ```
-
-3. **Enable Caching**:
-   ```python
-   from flask_caching import Cache
-   cache = Cache(app)
-   ```
-
-### Monitoring and Logging
 
 #### Application Logs
 ```bash
