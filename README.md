@@ -20,12 +20,12 @@ echo "PORT=5099" > .env
 
 **Step 4: Run the application**
 
-**Option A: Using Poetry script (Recommended)**
+**Option A: Using Poetry with Python (Recommended)**
 ```bash
-poetry run start
+poetry run python main.py
 ```
 
-**Option B: Using Poetry shell and Python**
+**Option B: Using Poetry shell**
 ```bash
 poetry shell
 python main.py
@@ -59,7 +59,7 @@ Edit `data/environments.yaml` to add your own environments. Changes take effect 
 **If port 5099 is busy:**
 ```bash
 echo "PORT=8080" > .env
-poetry run start
+poetry run python main.py
 ```
 
 **If you get import errors:**

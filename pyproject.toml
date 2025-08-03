@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Environment monitoring dashboard for product environments and health status"
 authors = ["Development Team <dev@company.com>"]
 readme = "README.md"
-packages = [{include = "vision_dashboard", from = "."}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -25,5 +24,3 @@ flake8 = "^6.0.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-start = "main:main"
