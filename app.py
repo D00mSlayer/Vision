@@ -8,6 +8,10 @@ from flask import Flask, render_template, jsonify
 from urllib.parse import urlparse
 import threading
 import time
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)

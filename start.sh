@@ -178,6 +178,36 @@ echo "   PORT: $PORT"
 echo "   FLASK_ENV: $FLASK_ENV"
 echo "   FLASK_DEBUG: $FLASK_DEBUG"
 
+# Check if port is available using Python socket binding
+echo ""
+echo "🔍 Checking port availability..."
+python3 -c "
+import socket
+import sys
+
+def check_port_available(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(('127.0.0.1', port))
+        sock.close()
+        return True
+    except OSError:
+        return False
+
+port = int('$PORT')
+if not check_port_available(port):
+    print(f'❌ Error: Port {port} is already in use!')
+    print('')
+    print('Solutions:')
+    print('1. Use a different port: PORT=5099 ./start.sh')
+    print('2. Kill the process using port', port)
+    print('3. Edit .env file to use a different port')
+    print('')
+    sys.exit(1)
+else:
+    print(f'✅ Port {port} is available')
+"
+
 echo ""
 echo "✅ Setup Complete!"
 echo ""

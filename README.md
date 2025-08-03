@@ -119,9 +119,20 @@ After editing, just refresh your browser - changes appear immediately!
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
+The script automatically checks if ports are available and provides helpful solutions:
+
 ```bash
-# Use a different port
+# The script will detect port conflicts and suggest solutions:
+# ❌ Error: Port 5000 is already in use!
+# 
+# Solutions:
+# 1. Use a different port: PORT=5099 ./start.sh
+# 2. Kill the process using port 5000
+# 3. Edit .env file to use a different port
+
+# Use any of these approaches:
 PORT=5099 ./start.sh
+# or edit .env file to set PORT=5099
 ```
 
 ### Prerequisites (Linux)
