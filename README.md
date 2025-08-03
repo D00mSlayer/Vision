@@ -4,44 +4,28 @@ A simple web dashboard for monitoring product environments and health status.
 
 ## Quick Start
 
-**Step 1: Requirements**
-- Python 3.9 or higher
-- Poetry (install with: `curl -sSL https://install.python-poetry.org | python3 -`)
-
-**Step 2: Install dependencies with Poetry**
 ```bash
+# 1. Install dependencies
 poetry install
-```
 
-**Step 3: Set your port in .env file**
-```bash
-echo "PORT=5099" > .env
-```
-
-**Step 4: Run the application**
-
-**Option A: Using Poetry with Python (Recommended)**
-```bash
+# 2. Start the app
 poetry run python main.py
 ```
 
-**Option B: Using Poetry shell**
+Open your browser to: http://localhost:5000
+
+That's it! The app monitors your environments automatically.
+
+## What the files do:
+- **app.py** = The Flask web application (creates the website)
+- **main.py** = Startup script (runs app.py)
+- **data/environments.yaml** = Your environment configuration
+
+## Change the port:
 ```bash
-poetry shell
-python main.py
+echo "PORT=5099" > .env
+poetry run python main.py
 ```
-
-**Option C: Using Flask directly**
-```bash
-poetry shell
-export FLASK_APP=app.py
-flask run --host=0.0.0.0 --port=5099
-```
-
-**Step 5: Open your browser**
-Go to: http://localhost:5099
-
-That's it! The app will start monitoring your environments automatically.
 
 ## What This App Does
 
