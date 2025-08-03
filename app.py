@@ -142,7 +142,10 @@ def update_health_status():
 def health_check_worker():
     """Background worker to continuously update health status"""
     while True:
-        update_health_status()
+        try:
+            update_health_status()
+        except Exception as e:
+            app.logger.error(f"Health check error: {e}")
         time.sleep(30)  # Check every 30 seconds
 
 @app.route('/')
@@ -172,8 +175,8 @@ def initialize_app():
     # Start health check worker in background thread
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    # Initial health check
-    update_health_status()
+    # Skip initial health check to start server faster
+    app.logger.info("Background health monitoring started")
 
 # Initialize the app immediately
 initialize_app()

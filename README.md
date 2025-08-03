@@ -8,11 +8,18 @@ A simple web dashboard for monitoring product environments and health status.
 # 1. Install dependencies
 poetry install --no-root
 
-# 2. Start the app
-poetry run python main.py
+# 2. Start the app (simple version - works immediately)
+poetry run python simple_main.py
 ```
 
 Open your browser to: http://localhost:5000
+
+**Alternative - Full version with real health monitoring:**
+```bash
+# This loads your real environment data but may take longer to start
+echo "PORT=5099" > .env
+poetry run python main.py
+```
 
 That's it! The app monitors your environments automatically.
 
