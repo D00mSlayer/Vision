@@ -295,4 +295,7 @@ angular.module('visionApp', [])
     
     // Start the application
     init();
+    
+    // Load bookmarks immediately on app start
+    loadBookmarks();
 }]);
