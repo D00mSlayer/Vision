@@ -43,6 +43,29 @@ def load_environment_data():
         app.logger.error(f"Error loading environment data: {e}")
         environment_data = {"product_versions": []}
 
+def file_watcher():
+    """Watch for changes in environments.yaml and reload data"""
+    import os
+    import time
+    
+    yaml_file = 'data/environments.yaml'
+    if not os.path.exists(yaml_file):
+        return
+        
+    last_modified = os.path.getmtime(yaml_file)
+    
+    while True:
+        try:
+            current_modified = os.path.getmtime(yaml_file)
+            if current_modified > last_modified:
+                app.logger.info("Detected changes in environments.yaml, reloading...")
+                load_environment_data()
+                last_modified = current_modified
+        except Exception as e:
+            app.logger.error(f"File watcher error: {e}")
+        
+        time.sleep(2)  # Check every 2 seconds
+
 def check_url_health(url):
     """Check if a URL is reachable"""
     try:
@@ -169,13 +192,22 @@ def trigger_health_check():
     update_health_status()
     return jsonify({"status": "updated", "health": health_status})
 
+@app.route('/api/reload')
+def reload_data():
+    """API endpoint to manually reload environment data"""
+    load_environment_data()
+    return jsonify({"status": "reloaded", "message": "Environment data reloaded successfully"})
+
 # Initialize data when the app starts
 def initialize_app():
     load_environment_data()
     # Start health check worker in background thread
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    app.logger.info("Background health monitoring started")
+    # Start file watcher in background thread
+    watcher_thread = threading.Thread(target=file_watcher, daemon=True)
+    watcher_thread.start()
+    app.logger.info("Background health monitoring and file watching started")
 
 # Initialize app with threading to prevent blocking
 def delayed_health_check():
