@@ -4,10 +4,9 @@ A simple web dashboard for monitoring product environments and health status.
 
 ## Quick Start
 
-**Step 1: Install Poetry (if not already installed)**
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
+**Step 1: Requirements**
+- Python 3.9 or higher
+- Poetry (install with: `curl -sSL https://install.python-poetry.org | python3 -`)
 
 **Step 2: Install dependencies with Poetry**
 ```bash
