@@ -28,43 +28,17 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev_secret_key_change_in_prod
 app.jinja_env.variable_start_string = '{['
 app.jinja_env.variable_end_string = ']}'
 
-# Global variable to store environment data and health status
-environment_data = {}
+# Global variable to store health status only
 health_status = {}
 
 def load_environment_data():
-    """Load environment data from YAML file"""
-    global environment_data
+    """Load environment data from YAML file - fresh every time"""
     try:
         with open('data/environments.yaml', 'r') as file:
-            environment_data = yaml.safe_load(file)
-        app.logger.info("Environment data loaded successfully")
+            return yaml.safe_load(file)
     except Exception as e:
         app.logger.error(f"Error loading environment data: {e}")
-        environment_data = {"product_versions": []}
-
-def file_watcher():
-    """Watch for changes in environments.yaml and reload data"""
-    import os
-    import time
-    
-    yaml_file = 'data/environments.yaml'
-    if not os.path.exists(yaml_file):
-        return
-        
-    last_modified = os.path.getmtime(yaml_file)
-    
-    while True:
-        try:
-            current_modified = os.path.getmtime(yaml_file)
-            if current_modified > last_modified:
-                app.logger.info("Detected changes in environments.yaml, reloading...")
-                load_environment_data()
-                last_modified = current_modified
-        except Exception as e:
-            app.logger.error(f"File watcher error: {e}")
-        
-        time.sleep(2)  # Check every 2 seconds
+        return {"product_versions": []}
 
 def check_url_health(url):
     """Check if a URL is reachable"""
@@ -134,6 +108,8 @@ def update_health_status():
     """Update health status for all URLs and databases"""
     global health_status
     
+    environment_data = load_environment_data()
+    
     if not environment_data:
         return
     
@@ -178,7 +154,8 @@ def index():
 
 @app.route('/api/environments')
 def get_environments():
-    """API endpoint to get environment data"""
+    """API endpoint to get environment data - always fresh"""
+    environment_data = load_environment_data()
     return jsonify(environment_data)
 
 @app.route('/api/health')
@@ -192,22 +169,14 @@ def trigger_health_check():
     update_health_status()
     return jsonify({"status": "updated", "health": health_status})
 
-@app.route('/api/reload')
-def reload_data():
-    """API endpoint to manually reload environment data"""
-    load_environment_data()
-    return jsonify({"status": "reloaded", "message": "Environment data reloaded successfully"})
+
 
 # Initialize data when the app starts
 def initialize_app():
-    load_environment_data()
     # Start health check worker in background thread
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    # Start file watcher in background thread
-    watcher_thread = threading.Thread(target=file_watcher, daemon=True)
-    watcher_thread.start()
-    app.logger.info("Background health monitoring and file watching started")
+    app.logger.info("Background health monitoring started")
 
 # Initialize app with threading to prevent blocking
 def delayed_health_check():
