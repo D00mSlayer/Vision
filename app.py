@@ -223,8 +223,13 @@ def update_health_status():
         # Process completed checks as they finish
         for future in as_completed(future_to_check):
             try:
-                health_key, result = future.result()
-                health_status[health_key] = result
+                result = future.result()
+                if result is not None:
+                    health_key, status = result
+                    health_status[health_key] = status
+                else:
+                    health_key, check_type = future_to_check[future]
+                    health_status[health_key] = False
             except Exception as e:
                 health_key, check_type = future_to_check[future]
                 app.logger.error(f"Health check thread failed for {health_key}: {e}")

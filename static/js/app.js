@@ -64,6 +64,17 @@ angular.module('visionApp', [])
         return $scope.healthStatus[key] ? 'Online' : 'Offline';
     };
     
+    // Build microservice URL with port for clickable links
+    $scope.getMicroserviceUrlWithPort = function(serverUrl, port) {
+        try {
+            const url = new URL(serverUrl);
+            return `${url.protocol}//${url.hostname}:${port}${url.pathname}`;
+        } catch (e) {
+            // Fallback to original URL if parsing fails
+            return serverUrl;
+        }
+    };
+    
     // Refresh health status manually
     $scope.refreshHealth = function() {
         $scope.refreshing = true;

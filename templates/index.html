@@ -347,8 +347,8 @@
                                                             <div class="small">
                                                                 <div>
                                                                     <strong>URL:</strong> 
-                                                                    <a ng-href="{{ ms.server_url }}" target="_blank" class="btn btn-outline-success btn-xs">
-                                                                        {{ ms.server_url }}
+                                                                    <a ng-href="{{ getMicroserviceUrlWithPort(ms.server_url, ms.port) }}" target="_blank" class="btn btn-outline-success btn-xs">
+                                                                        {{ getMicroserviceUrlWithPort(ms.server_url, ms.port) }}
                                                                         <i class="fas fa-external-link-alt ms-1"></i>
                                                                     </a>
                                                                 </div>
