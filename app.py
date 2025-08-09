@@ -120,16 +120,16 @@ def fuzzy_search_bookmarks(query, bookmarks):
 
 
 def check_url_health(url):
-    """Check if a URL is reachable"""
+    """Check if a URL is reachable with faster timeout"""
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(url, timeout=2)  # Reduced from 5 to 2 seconds
         return response.status_code == 200
     except:
         return False
 
 
 def check_database_health(host, port, database_name, username, password):
-    """Check if a MS SQL database is accessible using pymssql (FreeTDS)"""
+    """Check if a MS SQL database is accessible using pymssql (FreeTDS) with faster timeouts"""
 
     # Since ODBC drivers are not properly configured in this environment,
     # fall back to pymssql which uses FreeTDS directly
@@ -140,8 +140,8 @@ def check_database_health(host, port, database_name, username, password):
             password=password,
             database=database_name,
             port=str(port),
-            timeout=5,
-            login_timeout=5,
+            timeout=2,  # Reduced from 5 to 2 seconds
+            login_timeout=2,  # Reduced from 5 to 2 seconds
             # Add encryption support for pymssql
             charset='UTF-8')
         cursor = connection.cursor()
@@ -204,7 +204,7 @@ def health_check_worker():
             update_health_status()
         except Exception as e:
             app.logger.error(f"Health check error: {e}")
-        time.sleep(30)  # Check every 30 seconds
+        time.sleep(15)  # Check every 15 seconds (reduced from 30)
 
 
 @app.route('/')

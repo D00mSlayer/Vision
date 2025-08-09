@@ -287,10 +287,10 @@ angular.module('visionApp', [])
         loadEnvironmentData();
         loadHealthStatus();
         
-        // Set up automatic health status updates every 30 seconds
+        // Set up automatic health status updates every 10 seconds (faster updates)
         $interval(function() {
             loadHealthStatus();
-        }, 30000);
+        }, 10000);
     }
     
     // Start the application
