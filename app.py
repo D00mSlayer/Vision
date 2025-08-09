@@ -176,11 +176,14 @@ def update_health_status():
 
             for microservice in env.get('microservices', []):
                 ms_url = microservice.get('server_url')
-                if ms_url:
-                    # Use the original server_url as provided in the YAML
-                    # Don't modify the URL with the port since it's already in the URL
+                ms_port = microservice.get('port')
+                if ms_url and ms_port:
+                    # Parse the URL and add the port for health checking
+                    parsed_url = urlparse(ms_url)
+                    # Create URL with port for health checking
+                    health_check_url = f"{parsed_url.scheme}://{parsed_url.hostname}:{ms_port}{parsed_url.path}"
                     health_key = f"ms_{ms_url}"
-                    health_status[health_key] = check_url_health(ms_url)
+                    health_status[health_key] = check_url_health(health_check_url)
 
             for database in env.get('databases', []):
                 if all(
