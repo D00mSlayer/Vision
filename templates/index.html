@@ -388,6 +388,7 @@
             
             <!-- Bookmarks View -->
             <div ng-show="currentView === 'bookmarks'">
+                <h2>BOOKMARKS VIEW IS ACTIVE</h2>
                 <!-- Search Bar -->
                 <div class="row mb-4">
                     <div class="col-md-8 mx-auto">
@@ -448,12 +449,11 @@
                     bookmarks.length: {{ bookmarks.length }}<br>
                     filteredBookmarks.length: {{ filteredBookmarks.length }}<br>
                     currentView: {{ currentView }}<br>
-                    searchQuery: "{{ searchQuery }}"<br>
-                    bookmarks data: {{ bookmarks | json }}
+                    This should always show when in bookmarks view.
                 </div>
 
-                <!-- Bookmarks Grid -->
-                <div ng-if="!bookmarksLoading && filteredBookmarks.length > 0" class="row">
+                <!-- Bookmarks Grid - Simplified Condition -->
+                <div class="row">
                     <div ng-repeat="bookmark in filteredBookmarks" class="col-lg-6 col-xl-4 mb-4">
                         <div class="card h-100 bookmark-card">
                             <div class="card-header bg-primary text-white">
