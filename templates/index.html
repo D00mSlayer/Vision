@@ -270,16 +270,16 @@
 
                                             <!-- Git Information -->
                                             <div class="col-md-6 mb-3" ng-if="environment.git_branch || environment.git_tag">
-                                                <div class="card bg-light">
+                                                <div class="card bg-light h-100">
                                                     <div class="card-body">
                                                         <h6 class="card-title">
                                                             <i class="fab fa-git-alt me-2"></i>Git Information
                                                         </h6>
-                                                        <div>
+                                                        <div class="mb-1">
                                                             <strong>Branch:</strong> 
                                                             <span class="badge bg-info">{{ environment.git_branch }}</span>
                                                         </div>
-                                                        <div>
+                                                        <div class="mb-1">
                                                             <strong>Tag:</strong> 
                                                             <span class="badge bg-success">{{ environment.git_tag }}</span>
                                                         </div>
@@ -289,22 +289,22 @@
 
                                             <!-- Splunk Information -->
                                             <div class="col-md-6 mb-3" ng-if="environment.splunk">
-                                                <div class="card bg-light">
+                                                <div class="card bg-light h-100">
                                                     <div class="card-body">
                                                         <h6 class="card-title">
                                                             <i class="fas fa-chart-line me-2"></i>Splunk Configuration
                                                         </h6>
-                                                        <div ng-if="environment.splunk.url" class="mb-2">
+                                                        <div ng-if="environment.splunk.url" class="mb-1">
                                                             <strong>URL:</strong> 
                                                             <a ng-href="{{ environment.splunk.url }}" target="_blank" class="btn btn-outline-info btn-xs ms-1">
-                                                                {{ environment.splunk.url }}
+                                                                Access Splunk
                                                                 <i class="fas fa-external-link-alt ms-1"></i>
                                                             </a>
                                                         </div>
-                                                        <div><strong>Index:</strong> {{ environment.splunk.index }}</div>
-                                                        <div><strong>Source Type:</strong> {{ environment.splunk.sourcetype }}</div>
-                                                        <div ng-if="environment.splunk.username"><strong>Username:</strong> {{ environment.splunk.username }}</div>
-                                                        <div ng-if="environment.splunk.password"><strong>Password:</strong> {{ environment.splunk.password }}</div>
+                                                        <div class="small mb-1"><strong>Index:</strong> {{ environment.splunk.index }}</div>
+                                                        <div class="small mb-1"><strong>Source Type:</strong> {{ environment.splunk.sourcetype }}</div>
+                                                        <div ng-if="environment.splunk.username" class="small mb-1"><strong>Username:</strong> {{ environment.splunk.username }}</div>
+                                                        <div ng-if="environment.splunk.password" class="small"><strong>Password:</strong> {{ environment.splunk.password }}</div>
                                                     </div>
                                                 </div>
                                             </div>
