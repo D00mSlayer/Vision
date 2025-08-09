@@ -8,6 +8,7 @@ from flask import Flask, render_template, jsonify, request
 from urllib.parse import urlparse, urlunparse
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Load environment variables from .env file if available
 try:
@@ -158,8 +159,20 @@ def check_database_health(host, port, database_name, username, password):
         return False
 
 
+def check_single_health(check_type, health_key, *args):
+    """Check a single health endpoint and return the result"""
+    try:
+        if check_type == 'url':
+            return health_key, check_url_health(args[0])
+        elif check_type == 'database':
+            return health_key, check_database_health(*args)
+    except Exception as e:
+        app.logger.debug(f"Health check failed for {health_key}: {e}")
+        return health_key, False
+
+
 def update_health_status():
-    """Update health status for all URLs and databases"""
+    """Update health status for all URLs and databases using parallel processing"""
     global health_status
 
     environment_data = load_environment_data()
@@ -167,12 +180,15 @@ def update_health_status():
     if not environment_data:
         return
 
+    # Collect all health checks to run in parallel
+    health_checks = []
+
     for product in environment_data.get('product_versions', []):
         for env in product.get('environments', []):
             env_url = env.get('url')
             if env_url:
                 health_key = f"env_{env_url}"
-                health_status[health_key] = check_url_health(env_url)
+                health_checks.append(('url', health_key, env_url))
 
             for microservice in env.get('microservices', []):
                 ms_url = microservice.get('server_url')
@@ -183,7 +199,7 @@ def update_health_status():
                     # Create URL with port for health checking
                     health_check_url = f"{parsed_url.scheme}://{parsed_url.hostname}:{ms_port}{parsed_url.path}"
                     health_key = f"ms_{ms_url}"
-                    health_status[health_key] = check_url_health(health_check_url)
+                    health_checks.append(('url', health_key, health_check_url))
 
             for database in env.get('databases', []):
                 if all(
@@ -191,10 +207,28 @@ def update_health_status():
                     ['host', 'port', 'database_name', 'username', 'password']):
                     db_identifier = f"{database['host']}:{database['port']}/{database['database_name']}"
                     health_key = f"db_{db_identifier}"
-                    health_status[health_key] = check_database_health(
-                        database['host'], database['port'],
-                        database['database_name'], database['username'],
-                        database['password'])
+                    health_checks.append(('database', health_key, 
+                                        database['host'], database['port'],
+                                        database['database_name'], database['username'],
+                                        database['password']))
+
+    # Run all health checks in parallel with maximum 10 concurrent threads
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        # Submit all health checks
+        future_to_check = {
+            executor.submit(check_single_health, check_type, health_key, *args): (health_key, check_type)
+            for check_type, health_key, *args in health_checks
+        }
+        
+        # Process completed checks as they finish
+        for future in as_completed(future_to_check):
+            try:
+                health_key, result = future.result()
+                health_status[health_key] = result
+            except Exception as e:
+                health_key, check_type = future_to_check[future]
+                app.logger.error(f"Health check thread failed for {health_key}: {e}")
+                health_status[health_key] = False
 
 
 def health_check_worker():
