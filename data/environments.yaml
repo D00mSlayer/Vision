@@ -9,6 +9,9 @@ product_versions:
         splunk:
           index: "product_a_dev_index"
           sourcetype: "product_a_dev_logs"
+          url: "https://splunk-dev.company.com:8000"
+          username: "dev_splunk_user"
+          password: "dev_splunk_pass"
         databases:
           - type: "primary"
             host: "192.168.1.10"
@@ -40,6 +43,9 @@ product_versions:
         splunk:
           index: "product_a_stg_index"
           sourcetype: "product_a_stg_logs"
+          url: "https://splunk-stg.company.com:8000"
+          username: "stg_splunk_user"
+          password: "stg_splunk_pass"
         databases:
           - type: "primary"
             host: "192.168.2.10"
@@ -65,6 +71,9 @@ product_versions:
         splunk:
           index: "product_a_prod_index"
           sourcetype: "product_a_prod_logs"
+          url: "https://splunk-prod.company.com:8000"
+          username: "prod_splunk_user"
+          password: "prod_splunk_pass"
         databases:
           - type: "primary"
             host: "prod-db.producta.com"
@@ -98,6 +107,9 @@ product_versions:
         splunk:
           index: "product_b_dev_index"
           sourcetype: "product_b_dev_logs"
+          url: "https://splunk-dev.company.com:8000"
+          username: "dev_splunk_user"
+          password: "dev_splunk_pass"
         databases:
           - type: "primary"
             host: "192.168.1.20"
@@ -123,6 +135,9 @@ product_versions:
         splunk:
           index: "product_b_prod_index"
           sourcetype: "product_b_prod_logs"
+          url: "https://splunk-prod.company.com:8000"
+          username: "prod_splunk_user"
+          password: "prod_splunk_pass"
         databases:
           - type: "primary"
             host: "prod-db.productb.com"
