@@ -8,14 +8,16 @@ angular.module('visionApp', [])
     $scope.error = null;
     $scope.refreshing = false;
     $scope.lastUpdated = new Date();
+    
+    // Initialize bookmarks variables
+    $scope.bookmarks = [];
+    $scope.filteredBookmarks = [];
+    $scope.bookmarksLoading = false;
+    $scope.searchQuery = '';
     $scope.previewMode = false;
     
     // Bookmarks functionality
     $scope.currentView = 'environments'; // Default to environments view
-    $scope.bookmarks = [];
-    $scope.filteredBookmarks = [];
-    $scope.searchQuery = '';
-    $scope.bookmarksLoading = false;
     
     // Load environment data
     function loadEnvironmentData() {
@@ -302,6 +304,12 @@ angular.module('visionApp', [])
         $interval(function() {
             loadHealthStatus();
         }, 10000);
+        
+        // Initialize bookmarks variables to ensure they exist
+        $scope.bookmarks = [];
+        $scope.filteredBookmarks = [];
+        $scope.bookmarksLoading = false;
+        $scope.searchQuery = '';
     }
     
     // Start the application
