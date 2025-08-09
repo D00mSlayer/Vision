@@ -18,8 +18,6 @@ The application is built with a focus on low maintenance, using a simple archite
 ✓ **Development Tools**: Added dev dependencies (pytest, black, flake8) for code quality and testing
 ✓ **Bookmarks Feature**: Added complete bookmarks subpage with fuzzy search and typo tolerance for Jenkins jobs and dev links
 ✓ **Improved UX Hierarchy**: Clear separation between Environments (with Monitor/Detailed views) and Bookmarks (independent subpage)
-✓ **Modular Architecture**: Separated environments and bookmarks into dedicated JavaScript controllers and HTML templates for improved maintainability
-✓ **Unified CSS**: Created comprehensive vision-app.css with consistent styling, health indicators, responsive design, and dark mode support
 
 ## User Preferences
 
@@ -28,9 +26,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 **Frontend Architecture**
-- AngularJS (1.8.2) single-page application with modular controller architecture
-- Separate JavaScript controllers: MainController (navigation), EnvironmentsController, BookmarksController
-- Modular HTML templates: main index.html includes dedicated environment and bookmark templates
+- AngularJS (1.8.2) single-page application with a main controller pattern
 - Bootstrap 5.3.0 for responsive UI components and styling
 - Font Awesome 6.4.0 for iconography
 - Real-time health status updates with visual indicators
