@@ -440,6 +440,17 @@
                         <br><small>Debug: bookmarks.length = {{ bookmarks.length }}, filteredBookmarks.length = {{ filteredBookmarks.length }}</small>
                     </div>
                 </div>
+                
+                <!-- Debug Information - Always Show -->
+                <div class="alert alert-info">
+                    <strong>Debug Info:</strong><br>
+                    bookmarksLoading: {{ bookmarksLoading }}<br>
+                    bookmarks.length: {{ bookmarks.length }}<br>
+                    filteredBookmarks.length: {{ filteredBookmarks.length }}<br>
+                    currentView: {{ currentView }}<br>
+                    searchQuery: "{{ searchQuery }}"<br>
+                    bookmarks data: {{ bookmarks | json }}
+                </div>
 
                 <!-- Bookmarks Grid -->
                 <div ng-if="!bookmarksLoading && filteredBookmarks.length > 0" class="row">
