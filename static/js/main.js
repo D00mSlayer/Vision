@@ -1,6 +1,7 @@
 // Main Vision App - Navigation and View Management
-angular.module('visionApp', [])
-.controller('MainController', ['$scope', function($scope) {
+var visionApp = angular.module('visionApp', []);
+
+visionApp.controller('MainController', ['$scope', function($scope) {
     // View management
     $scope.currentView = 'environments'; // Default to environments view
     
@@ -11,10 +12,8 @@ angular.module('visionApp', [])
         
         // Trigger specific actions based on view
         if (view === 'bookmarks') {
-            // Let the BookmarksController handle its own initialization
             console.log('Bookmarks view activated');
         } else if (view === 'environments') {
-            // Let the EnvironmentsController handle its own initialization
             console.log('Environments view activated');
         }
     };

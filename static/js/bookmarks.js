@@ -1,5 +1,5 @@
 // Bookmarks Module - Bookmarks functionality
-angular.module('visionApp').controller('BookmarksController', ['$scope', '$http', function($scope, $http) {
+visionApp.controller('BookmarksController', ['$scope', '$http', function($scope, $http) {
     // Initialize bookmarks variables
     $scope.bookmarks = [];
     $scope.filteredBookmarks = [];

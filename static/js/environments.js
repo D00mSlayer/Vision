@@ -1,5 +1,5 @@
-// Environments Module - Environment monitoring functionality
-angular.module('visionApp').controller('EnvironmentsController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
+// Environments Module - Environment monitoring functionality  
+visionApp.controller('EnvironmentsController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
     // Initialize environment variables
     $scope.environmentData = {};
     $scope.healthStatus = {};
