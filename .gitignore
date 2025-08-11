@@ -1,0 +1,9 @@
+data/
+logs/
+venv/
+attached_assets/
+__pycache__/
+.replit
+poetry.lock
+replit.md
+uv.lock

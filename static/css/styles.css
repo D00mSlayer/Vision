@@ -687,3 +687,40 @@ a:hover {
 .btn-group .btn:hover {
     transform: translateY(-1px);
 }
+
+.health-up {
+    color: #198754; /* Bootstrap Success Green */
+}
+
+.health-down {
+    color: #dc3545; /* Bootstrap Danger Red */
+}
+
+.health-checking {
+    color: #6c757d; /* Bootstrap Muted Grey */
+}
+
+.preview-mode {
+    padding-top: 20px;
+}
+
+.sql-results-wrapper {
+    position: relative;
+    min-height: 200px; /* Give it a minimum height */
+}
+
+/* This outer container handles the VERTICAL scrollbar */
+.sql-result-container {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* The inner .table-responsive container handles the HORIZONTAL scrollbar */
+.sql-result-container .table-responsive {
+    height: 100%;
+}
+
+.sql-table-container {
+    max-height: 60vh; /* Set a maximum height (e.g., 60% of the viewport height) */
+    overflow: auto;   /* This will create both vertical and horizontal scrollbars as needed */
+}

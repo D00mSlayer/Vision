@@ -3,319 +3,236 @@ import yaml
 import logging
 import requests
 import pyodbc
-import pymssql
-from flask import Flask, render_template, jsonify, request
-from urllib.parse import urlparse, urlunparse
+import re
 import threading
 import time
+from flask import Flask, render_template, jsonify, request
+from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Load environment variables from .env file if available
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    # python-dotenv not available, skip loading .env files
-    pass
+IS_DEBUG = os.getenv('FLASK_DEBUG', 'false').lower() in ('true', '1', 't')
+PORT = int(os.getenv('PORT', 8080))
+HEALTH_CHECK_INTERVAL = int(os.getenv('HEALTH_CHECK_INTERVAL', 30))
+DB_TIMEOUT = int(os.getenv('DB_TIMEOUT', 10))
+URL_TIMEOUT = int(os.getenv('URL_TIMEOUT', 10))
+MAX_WORKERS = int(os.getenv('MAX_WORKERS', 10))
+MONITOR_SCROLL_INTERVAL_SECONDS = int(os.getenv('MONITOR_SCROLL_INTERVAL_SECONDS', 8))
+MONITOR_SCROLL_PERCENTAGE = float(os.getenv('MONITOR_SCROLL_PERCENTAGE', 0.8))
+SQL_EDITOR_RESULT_LIMIT = int(os.getenv('SQL_EDITOR_RESULT_LIMIT', 100))
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Create the Flask app
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET",
-                                "dev_secret_key_change_in_production")
-
-# Configure Jinja2 to use different delimiters to avoid conflicts with AngularJS
 app.jinja_env.variable_start_string = '{['
 app.jinja_env.variable_end_string = ']}'
 
-# Global variable to store health status only
 health_status = {}
+health_status_lock = threading.Lock()
 
-
-def load_environment_data():
-    """Load environment data from YAML file - fresh every time"""
+def load_yaml_data(file_path):
+    """Generic function to load a YAML file."""
     try:
-        with open('data/environments.yaml', 'r') as file:
+        with open(file_path, 'r') as file:
             return yaml.safe_load(file)
+    except FileNotFoundError:
+        app.logger.error(f"YAML file not found at: {file_path}")
     except Exception as e:
-        app.logger.error(f"Error loading environment data: {e}")
-        return {"product_versions": []}
-
-
-def load_bookmarks_data():
-    """Load bookmarks data from YAML file - fresh every time"""
-    try:
-        with open('data/bookmarks.yaml', 'r') as file:
-            return yaml.safe_load(file)
-    except Exception as e:
-        app.logger.error(f"Error loading bookmarks data: {e}")
-        return {"bookmarks": []}
-
-
-def fuzzy_search_bookmarks(query, bookmarks):
-    """Perform fuzzy search on bookmarks with typo tolerance"""
-    if not query:
-        return bookmarks
-
-    import re
-    from difflib import SequenceMatcher
-
-    query = query.lower().strip()
-    results = []
-
-    def similarity_score(a, b):
-        """Calculate similarity between two strings"""
-        return SequenceMatcher(None, a.lower(), b.lower()).ratio()
-
-    def contains_fuzzy(text, search_term):
-        """Check if text contains search term with fuzzy matching"""
-        text = text.lower()
-        # Direct substring match gets highest score
-        if search_term in text:
-            return 1.0
-
-        # Check for partial word matches
-        words = text.split()
-        best_score = 0
-        for word in words:
-            score = similarity_score(word, search_term)
-            if score > best_score:
-                best_score = score
-
-        return best_score
-
-    for bookmark in bookmarks:
-        max_score = 0
-
-        # Search in name
-        name_score = contains_fuzzy(bookmark.get('name', ''), query)
-        max_score = max(max_score, name_score)
-
-        # Search in description
-        desc_score = contains_fuzzy(bookmark.get('description', ''), query)
-        max_score = max(max_score, desc_score)
-
-        # Search in main URL
-        url_score = contains_fuzzy(bookmark.get('main_url', ''), query)
-        max_score = max(max_score, url_score)
-
-        # Search in git link
-        git_score = contains_fuzzy(bookmark.get('git_link', ''), query)
-        max_score = max(max_score, git_score)
-
-        # Search in sub URLs
-        for sub_url in bookmark.get('sub_urls', []):
-            sub_name_score = contains_fuzzy(sub_url.get('name', ''), query)
-            sub_url_score = contains_fuzzy(sub_url.get('url', ''), query)
-            max_score = max(max_score, sub_name_score, sub_url_score)
-
-        # Include if similarity is above threshold (0.4 for typo tolerance)
-        if max_score >= 0.4:
-            results.append({'bookmark': bookmark, 'score': max_score})
-
-    # Sort by relevance score (highest first)
-    results.sort(key=lambda x: x['score'], reverse=True)
-    return [result['bookmark'] for result in results]
-
+        app.logger.error(f"Error parsing YAML file {file_path}: {e}")
+    return None
 
 def check_url_health(url):
-    """Check if a URL is reachable with faster timeout"""
+    """Checks a single URL endpoint."""
     try:
-        response = requests.get(url, timeout=2)  # Reduced from 5 to 2 seconds
-        return response.status_code == 200
-    except:
+        response = requests.get(url, timeout=URL_TIMEOUT, headers={'User-Agent': 'VisionDashboard-HealthCheck/1.0'})
+        return response.status_code >= 200 and response.status_code < 400
+    except requests.RequestException as e:
+        app.logger.debug(f"URL check failed for {url}: {e}")
         return False
 
+def check_database_health(db_config):
+    """Checks a single MS-SQL database connection using pyodbc and ODBC Driver 18."""
+    driver = "{ODBC Driver 18 for SQL Server}"
+    
+    connection_string = (
+        f"DRIVER={driver};"
+        f"SERVER={db_config['host']},{db_config['port']};"
+        f"DATABASE={db_config['database_name']};"
+        f"UID={db_config['username']};"
+        f"PWD={db_config['password']};"
+        f"Encrypt=yes;"
+        f"TrustServerCertificate=yes;"
+        f"Connection Timeout={DB_TIMEOUT};"
+    )
 
-def check_database_health(host, port, database_name, username, password):
-    """Check if a MS SQL database is accessible using pymssql (FreeTDS) with faster timeouts"""
-
-    # Since ODBC drivers are not properly configured in this environment,
-    # fall back to pymssql which uses FreeTDS directly
     try:
-        connection = pymssql.connect(
-            server=host,
-            user=username,
-            password=password,
-            database=database_name,
-            port=str(port),
-            timeout=2,  # Reduced from 5 to 2 seconds
-            login_timeout=2,  # Reduced from 5 to 2 seconds
-            # Add encryption support for pymssql
-            charset='UTF-8')
-        cursor = connection.cursor()
-        cursor.execute("SELECT 1")
-        cursor.fetchone()
-        cursor.close()
-        connection.close()
+        with pyodbc.connect(connection_string) as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
         return True
-
+    except pyodbc.Error as e:
+        app.logger.debug(f"pyodbc DB check failed for {db_config['host']}: {e}")
+        return False
     except Exception as e:
-        app.logger.debug(
-            f"MS SQL database health check failed for {host}:{port}/{database_name}: {e}"
-        )
+        app.logger.error(f"An unexpected error occurred during pyodbc check for {db_config['host']}: {e}")
         return False
 
-
-def check_single_health(check_type, health_key, *args):
-    """Check a single health endpoint and return the result"""
-    try:
-        if check_type == 'url':
-            return health_key, check_url_health(args[0])
-        elif check_type == 'database':
-            return health_key, check_database_health(*args)
-    except Exception as e:
-        app.logger.debug(f"Health check failed for {health_key}: {e}")
-        return health_key, False
-
-
-def update_health_status():
-    """Update health status for all URLs and databases using parallel processing"""
-    global health_status
-
-    environment_data = load_environment_data()
-
-    if not environment_data:
+def run_all_health_checks():
+    """Gathers all services from YAML, de-duplicates them, and runs checks in parallel."""
+    app.logger.info("Starting a new health check cycle...")
+    environment_data = load_yaml_data('data/environments.yaml')
+    if not environment_data or 'product_versions' not in environment_data:
+        app.logger.warning("No product versions found in environments data. Skipping health checks.")
         return
 
-    # Collect all health checks to run in parallel
-    health_checks = []
-
+    unique_checks = {}
     for product in environment_data.get('product_versions', []):
         for env in product.get('environments', []):
-            env_url = env.get('url')
-            if env_url:
-                health_key = f"env_{env_url}"
-                health_checks.append(('url', health_key, env_url))
+            if env.get('url'):
+                key = f"env_{env['url']}"
+                if key not in unique_checks:
+                    unique_checks[key] = ('url', env['url'])
+            
+            for ms in env.get('microservices', []):
+                if ms.get('server_url') and ms.get('port'):
+                    key = f"ms_{ms['server_url']}"
+                    if key not in unique_checks:
+                        parsed = urlparse(ms['server_url'])
+                        health_url = f"{parsed.scheme}://{parsed.hostname}:{ms['port']}{parsed.path}"
+                        unique_checks[key] = ('url', health_url)
+            
+            for db in env.get('databases', []):
+                key = f"db_{db['host']}:{db['port']}/{db['database_name']}"
+                if key not in unique_checks:
+                    unique_checks[key] = ('database', db)
 
-            for microservice in env.get('microservices', []):
-                ms_url = microservice.get('server_url')
-                ms_port = microservice.get('port')
-                if ms_url and ms_port:
-                    # Parse the URL and add the port for health checking
-                    parsed_url = urlparse(ms_url)
-                    # Create URL with port for health checking
-                    health_check_url = f"{parsed_url.scheme}://{parsed_url.hostname}:{ms_port}{parsed_url.path}"
-                    health_key = f"ms_{ms_url}"
-                    health_checks.append(('url', health_key, health_check_url))
+    if not unique_checks:
+        app.logger.info("No unique services found to check.")
+        return
 
-            for database in env.get('databases', []):
-                if all(
-                        key in database for key in
-                    ['host', 'port', 'database_name', 'username', 'password']):
-                    db_identifier = f"{database['host']}:{database['port']}/{database['database_name']}"
-                    health_key = f"db_{db_identifier}"
-                    health_checks.append(('database', health_key, 
-                                        database['host'], database['port'],
-                                        database['database_name'], database['username'],
-                                        database['password']))
+    latest_status = {}
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        future_to_key = {}
+        for key, (check_type, data) in unique_checks.items():
+            if check_type == 'url':
+                future = executor.submit(check_url_health, data)
+            elif check_type == 'database':
+                future = executor.submit(check_database_health, data)
+            future_to_key[future] = key
 
-    # Run all health checks in parallel with maximum 10 concurrent threads
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        # Submit all health checks
-        future_to_check = {
-            executor.submit(check_single_health, check_type, health_key, *args): (health_key, check_type)
-            for check_type, health_key, *args in health_checks
-        }
-        
-        # Process completed checks as they finish
-        for future in as_completed(future_to_check):
+        for future in as_completed(future_to_key):
+            key = future_to_key[future]
             try:
-                result = future.result()
-                if result is not None:
-                    health_key, status = result
-                    health_status[health_key] = status
-                else:
-                    health_key, check_type = future_to_check[future]
-                    health_status[health_key] = False
-            except Exception as e:
-                health_key, check_type = future_to_check[future]
-                app.logger.error(f"Health check thread failed for {health_key}: {e}")
-                health_status[health_key] = False
+                latest_status[key] = future.result()
+            except Exception as exc:
+                app.logger.error(f"Health check for '{key}' generated an exception: {exc}")
+                latest_status[key] = False
 
+    with health_status_lock:
+        health_status.clear()
+        health_status.update(latest_status)
+    
+    app.logger.info(f"Health check cycle complete. Checked {len(latest_status)} unique services.")
 
 def health_check_worker():
-    """Background worker to continuously update health status"""
+    """Background worker to run health checks periodically."""
+    app.logger.info("Background health check worker started.")
+    run_all_health_checks()
+    
     while True:
-        try:
-            update_health_status()
-        except Exception as e:
-            app.logger.error(f"Health check error: {e}")
-        time.sleep(15)  # Check every 15 seconds (reduced from 30)
-
+        time.sleep(HEALTH_CHECK_INTERVAL)
+        run_all_health_checks()
 
 @app.route('/')
 def index():
-    """Main page route"""
     return render_template('index.html')
 
+@app.route('/api/dashboard_data')
+def get_dashboard_data():
+    """Provides a single source of truth for the dashboard."""
+    environment_data = load_yaml_data('data/environments.yaml')
+    with health_status_lock:
+        current_health = health_status.copy()
 
-@app.route('/api/environments')
-def get_environments():
-    """API endpoint to get environment data - always fresh"""
-    environment_data = load_environment_data()
-    return jsonify(environment_data)
-
+    return jsonify({
+        'environments': environment_data or {"product_versions": []},
+        'health': current_health
+    })
 
 @app.route('/api/bookmarks')
 def get_bookmarks():
-    """API endpoint to get all bookmarks"""
-    bookmarks_data = load_bookmarks_data()
-    return jsonify(bookmarks_data)
+    data = load_yaml_data('data/bookmarks.yaml')
+    return jsonify(data or {"bookmarks": []})
+
+@app.route('/api/config')
+def get_app_config():
+    return jsonify({
+        'healthCheckIntervalMs': HEALTH_CHECK_INTERVAL * 1000,
+        'monitorScrollIntervalMs': MONITOR_SCROLL_INTERVAL_SECONDS * 1000,
+        'monitorScrollPercentage': MONITOR_SCROLL_PERCENTAGE
+    })
+
+@app.route('/api/db/execute', methods=['POST'])
+def execute_sql_query():
+    """Executes a read-only SQL query, automatically adding NOLOCK hints."""
+    data = request.get_json()
+    db_config = data.get('db_config')
+    query = data.get('query', '').strip()
+
+    if not query.upper().startswith('SELECT'):
+        return jsonify({'success': False, 'error': 'Only SELECT statements are allowed.'}), 400
+
+    if not db_config:
+        return jsonify({'success': False, 'error': 'Database configuration is missing.'}), 400
+
+    nolock_pattern = re.compile(
+        r'(\bFROM\b|\bJOIN\b)\s+([a-zA-Z0-9_\[\].]+)\b(?!\s+WITH\s*\()',
+        re.IGNORECASE | re.MULTILINE
+    )
+    query_with_nolock = nolock_pattern.sub(r'\1 \2 WITH (NOLOCK)', query)
+    app.logger.info(f"Augmented SQL Query: {query_with_nolock}")
+
+    driver = "{ODBC Driver 18 for SQL Server}"
+    connection_string = (
+        f"DRIVER={driver};"
+        f"SERVER={db_config['host']},{db_config['port']};"
+        f"DATABASE={db_config['database_name']};"
+        f"UID={db_config['username']};"
+        f"PWD={db_config['password']};"
+        f"Encrypt=yes;TrustServerCertificate=yes;"
+        f"Connection Timeout={DB_TIMEOUT};"
+    )
+
+    try:
+        with pyodbc.connect(connection_string, autocommit=True) as connection:
+            cursor = connection.cursor()
+            cursor.execute(query_with_nolock)
+            
+            if cursor.description:
+                columns = [column[0] for column in cursor.description]
+                all_rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                total_row_count = len(all_rows)
+                limited_rows = all_rows[:SQL_EDITOR_RESULT_LIMIT]
+            else:
+                columns, limited_rows, total_row_count = [], [], cursor.rowcount
+
+        return jsonify({
+            'success': True, 
+            'columns': columns, 
+            'rows': limited_rows, 
+            'rowCount': total_row_count,
+            'limit': SQL_EDITOR_RESULT_LIMIT,
+            'executedQuery': query_with_nolock
+        })
+
+    except pyodbc.Error as e:
+        return jsonify({'success': False, 'error': str(e), 'executedQuery': query_with_nolock})
+    except Exception as e:
+        return jsonify({'success': False, 'error': f"An unexpected error occurred: {e}"}), 500
 
 
-@app.route('/api/bookmarks/search')
-def search_bookmarks():
-    """API endpoint to search bookmarks with fuzzy matching"""
-    query = request.args.get('q', '')
-    bookmarks_data = load_bookmarks_data()
 
-    if query:
-        filtered_bookmarks = fuzzy_search_bookmarks(
-            query, bookmarks_data.get('bookmarks', []))
-        return jsonify({'bookmarks': filtered_bookmarks, 'query': query})
-    else:
-        return jsonify(bookmarks_data)
-
-
-@app.route('/api/health')
-def get_health_status():
-    """API endpoint to get health status"""
-    return jsonify(health_status)
-
-
-@app.route('/api/health/check')
-def trigger_health_check():
-    """API endpoint to trigger immediate health check"""
-    update_health_status()
-    return jsonify({"status": "updated", "health": health_status})
-
-
-# Initialize data when the app starts
-def initialize_app():
-    # Start health check worker in background thread
+if __name__ == '__main__':
     health_thread = threading.Thread(target=health_check_worker, daemon=True)
     health_thread.start()
-    app.logger.info("Background health monitoring started")
-
-
-# Initialize app with threading to prevent blocking
-def delayed_health_check():
-    """Start initial health check after Flask server is running"""
-    import time
-    time.sleep(5)  # Wait 5 seconds for server to fully start
-    app.logger.info("Starting initial health check...")
-    update_health_status()
-
-
-# Initialize the app immediately but defer health checks
-initialize_app()
-
-# Start delayed health check in background
-delayed_health_thread = threading.Thread(target=delayed_health_check,
-                                         daemon=True)
-delayed_health_thread.start()
-
-# Remove redundant app.run - use 'flask run' or main.py instead
+    
+    app.run(debug=True, use_reloader=False)

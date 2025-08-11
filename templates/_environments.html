@@ -1,0 +1,355 @@
+<div ng-show="currentView === 'environments'">
+    <div class="mb-3" ng-hide="previewMode">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Environment Health Dashboard
+                </h5>
+                <small class="text-muted">Real-time monitoring of microservices and databases</small>
+            </div>
+            <div class="btn-group" role="group">
+                <button class="btn" ng-class="previewMode ? 'btn-outline-primary' : 'btn-primary'" ng-click="setViewMode('detailed')">
+                    <i class="fas fa-list-ul me-1"></i>Detailed View
+                </button>
+                <button class="btn" ng-class="previewMode ? 'btn-primary' : 'btn-outline-primary'" ng-click="setViewMode('monitor')">
+                    <i class="fas fa-tv me-1"></i>Monitor View
+                </button>
+                <button class="btn btn-outline-success" ng-click="refreshHealth()" ng-disabled="refreshing">
+                    <i class="fas fa-sync-alt" ng-class="{'fa-spin': refreshing}"></i>
+                    <span ng-bind="refreshing ? 'Refreshing...' : 'Refresh'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="previewMode" class="preview-mode">
+        <div class="health-summary mb-4">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <div class="summary-card bg-success text-white">
+                        <h2 class="display-4 mb-0">{{ getOverallStats().online }}</h2>
+                        <p class="mb-0">Services Online</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-danger text-white">
+                        <h2 class="display-4 mb-0">{{ getOverallStats().offline }}</h2>
+                        <p class="mb-0">Services Offline</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-info text-white">
+                        <h2 class="display-4 mb-0">{{ getOverallStats().environments }}</h2>
+                        <p class="mb-0">Environments</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="summary-card bg-warning text-dark">
+                        <h2 class="display-4 mb-0">{{ getOverallStats().uptime }}%</h2>
+                        <p class="mb-0">Overall Uptime</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div ng-repeat="product in environmentData.product_versions" class="col-12 mb-4">
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <h3 class="product-title">
+                            <i class="fas fa-cube me-3"></i>{{ product.name }}
+                        </h3>
+                        <div class="product-health-indicator">
+                            <span class="health-score">{{ getProductHealthScore(product) }}% Healthy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="environments-row">
+                        <div ng-repeat="environment in product.environments" class="environment-column">
+                            <div class="environment-header">
+                                <h4 class="env-name">{{ environment.name }}</h4>
+                                <div class="env-status">
+                                    <i class="fas fa-circle fa-lg" ng-class="getHealthClass('env_' + environment.url)"></i>
+                                    <span class="status-text">{{ getHealthText('env_' + environment.url) }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="microservices-flow" ng-if="environment.microservices.length > 0">
+                                <div ng-repeat="ms in environment.microservices" class="service-pill">
+                                    <i class="fas fa-circle service-indicator" ng-class="getHealthClass('ms_' + ms.server_url)"></i>
+                                    <span class="service-label">{{ ms.name_of_service }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="database-indicators" ng-if="environment.databases.length > 0">
+                                <div class="db-section mb-2">
+                                    <i class="fas fa-database text-muted me-2"></i>
+                                    <span class="text-muted">{{ environment.databases.length }} Database{{ environment.databases.length > 1 ? 's' : '' }}</span>
+                                </div>
+                                <div class="database-health-grid">
+                                    <div ng-repeat="db in environment.databases" class="db-health-item">
+                                        <i class="fas fa-circle db-indicator" ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
+                                        <span class="db-label">{{ db.type }} DB</span>
+                                        <small class="db-host">{{ db.host }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auto-scroll-indicator">
+            <i class="fas fa-sync-alt fa-spin me-2"></i>
+            <span>Auto-scrolling every 8 seconds</span>
+        </div>
+    </div>
+
+    <div ng-if="!previewMode">
+        <div ng-repeat="product in environmentData.product_versions track by product.name" class="mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-cube me-2"></i><span ng-bind="product.name"></span>
+                    </h3>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="accordion" ng-attr-id="{{'accordion-' + $parent.$index}}">
+                        <div ng-repeat="environment in product.environments track by environment.name" class="accordion-item">
+                            <h2 class="accordion-header" ng-attr-id="{{'heading-' + $parent.$index + '-' + $index}}">
+                                <button class="accordion-button collapsed" type="button" 
+                                        data-bs-toggle="collapse" 
+                                        ng-attr-data-bs-target="{{'#collapse-' + $parent.$index + '-' + $index}}"
+                                        aria-expanded="false">
+                                    <div class="d-flex align-items-center w-100">
+                                        <i class="fas fa-server me-2"></i>
+                                        <span class="me-auto">{{ environment.name }}</span>
+                                        <span class="health-indicator me-3">
+                                            <i class="fas fa-circle" 
+                                               ng-class="getHealthClass('env_' + environment.url)"></i>
+                                            <span class="ms-1">{{ getHealthText('env_' + environment.url) }}</span>
+                                        </span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div ng-attr-id="{{'collapse-' + $parent.$index + '-' + $index}}" 
+                                 class="accordion-collapse collapse"
+                                 ng-attr-data-bs-parent="{{'#accordion-' + $parent.$index}}">
+                                <div class="accordion-body">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="card bg-light">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">
+                                                        <i class="fas fa-globe me-2"></i>Environment URL
+                                                    </h6>
+                                                    <a ng-href="{{ environment.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                        {{ environment.url }}
+                                                        <i class="fas fa-external-link-alt ms-1"></i>
+                                                    </a>
+                                                    <span class="ms-2">
+                                                        <i class="fas fa-circle" 
+                                                           ng-class="getHealthClass('env_' + environment.url)"></i>
+                                                        {{ getHealthText('env_' + environment.url) }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3" ng-if="environment.git_branch || environment.git_tag">
+                                            <div class="card bg-light h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">
+                                                        <i class="fab fa-git-alt me-2"></i>Git Information
+                                                    </h6>
+                                                    <div class="mb-1">
+                                                        <strong>Branch:</strong> 
+                                                        <a ng-href="https://git.company.com/company/build/-/tree/{{ environment.git_branch }}" target="_blank" class="btn btn-outline-info btn-xs ms-1">
+                                                            {{ environment.git_branch }}
+                                                            <i class="fas fa-external-link-alt ms-1"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <strong>Tag:</strong> 
+                                                        <a ng-if="environment.git_tag" ng-href="https://git.company.com/company/build/-/tree/{{ environment.git_tag }}" target="_blank" class="btn btn-outline-info btn-xs ms-1">
+                                                            {{ environment.git_tag }}
+                                                            <i class="fas fa-external-link-alt ms-1"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3" ng-if="environment.splunk">
+                                            <div class="card bg-light h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">
+                                                        <i class="fas fa-chart-line me-2"></i>Splunk Configuration
+                                                    </h6>
+                                                    <div ng-if="environment.splunk.url" class="mb-1">
+                                                        <strong>URL:</strong> 
+                                                        <a ng-href="{{ environment.splunk.url }}" target="_blank" class="btn btn-outline-info btn-xs ms-1">
+                                                            Access Splunk
+                                                            <i class="fas fa-external-link-alt ms-1"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="small mb-1"><strong>Index:</strong> {{ environment.splunk.index }}</div>
+                                                    <div class="small mb-1"><strong>Source Type:</strong> {{ environment.splunk.sourcetype }}</div>
+                                                    <div ng-if="environment.splunk.username" class="small mb-1"><strong>Username:</strong> {{ environment.splunk.username }}</div>
+                                                    <div ng-if="environment.splunk.password" class="small"><strong>Password:</strong> {{ environment.splunk.password }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="environment.databases.length > 0" class="mb-3">
+                                        <h6><i class="fas fa-database me-2"></i>Databases</h6>
+                                        <div class="row">
+                                            <div ng-repeat="db in environment.databases" class="col-md-6 mb-2">
+                                                <div class="card border-primary">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">
+                                                            <span class="badge bg-primary">{{ db.type }}</span>
+                                                            <span class="ms-2">
+                                                                <i class="fas fa-circle" 
+                                                                   ng-class="getHealthClass('db_' + db.host + ':' + db.port + '/' + db.database_name)"></i>
+                                                                {{ getHealthText('db_' + db.host + ':' + db.port + '/' + db.database_name) }}
+                                                            </span>
+                                                        </h6>
+                                                        <div class="small">
+                                                            <div><strong>Host:</strong> {{ db.host }}</div>
+                                                            <div><strong>Port:</strong> {{ db.port }}</div>
+                                                            <div><strong>Database:</strong> {{ db.database_name }}</div>
+                                                            <div><strong>Username:</strong> {{ db.username }}</div>
+                                                            <div><strong>Password:</strong> {{ db.password }}</div>
+                                                        </div>
+                                                        <button class="btn btn-outline-primary btn-sm mt-2" ng-click="openSqlEditor(db)">
+                                                            <i class="fas fa-terminal me-1"></i> Query
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="environment.microservices.length > 0">
+                                        <h6><i class="fas fa-cogs me-2"></i>Microservices</h6>
+                                        <div class="row">
+                                            <div ng-repeat="ms in environment.microservices" class="col-md-6 mb-2">
+                                                <div class="card border-success">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">
+                                                            {{ ms.name_of_service }}
+                                                            <span class="ms-2">
+                                                                <i class="fas fa-circle" 
+                                                                   ng-class="getHealthClass('ms_' + ms.server_url)"></i>
+                                                                {{ getHealthText('ms_' + ms.server_url) }}
+                                                            </span>
+                                                        </h6>
+                                                        <div class="small">
+                                                            <div>
+                                                                <strong>URL:</strong> 
+                                                                <a ng-href="{{ getMicroserviceUrlWithPort(ms.server_url, ms.port) }}" target="_blank" class="btn btn-outline-success btn-xs">
+                                                                    {{ getMicroserviceUrlWithPort(ms.server_url, ms.port) }}
+                                                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                                                </a>
+                                                            </div>
+                                                            <div><strong>Port:</strong> {{ ms.port }}</div>
+                                                            <div>
+                                                                <strong>Branch:</strong> 
+                                                                <span class="badge bg-info">{{ ms.git_branch }}</span>
+                                                            </div>
+                                                            <div>
+                                                                <strong>Tag:</strong> 
+                                                                <span class="badge bg-success">{{ ms.git_tag }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sqlEditorModal" tabindex="-1" aria-labelledby="sqlEditorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sqlEditorModalLabel">
+                    <i class="fas fa-terminal me-2"></i>SQL Editor: 
+                    <span class="fw-bold" ng-bind="activeSqlDb.host + '/' + activeSqlDb.database_name"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column">
+                <div class="form-group mb-2">
+                    <label for="sqlQueryText" class="form-label">SQL Query (SELECT only)</label>
+                    <textarea class="form-control font-monospace" id="sqlQueryText" rows="6" ng-model="sqlEditor.query"></textarea>
+                </div>
+
+                <div class="sql-results-wrapper flex-grow-1 mt-3">
+                    <div ng-if="sqlEditor.isLoading" class="text-center p-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Executing...</span>
+                        </div>
+                        <p class="mt-2">Executing query...</p>
+                    </div>
+
+                    <div ng-if="!sqlEditor.isLoading && sqlEditor.error" class="alert alert-danger">
+                        <h6 class="alert-heading">SQL Error</h6>
+                        <pre class="mb-0" ng-bind="sqlEditor.error"></pre>
+                    </div>
+
+                    <div ng-if="!sqlEditor.isLoading && sqlEditor.results">
+                        <div class="alert alert-success d-flex justify-content-between align-items-center">
+                            <span>
+                                Query successful. 
+                                <span ng-if="sqlEditor.results.rows.length < sqlEditor.results.rowCount">
+                                    Showing first <strong ng-bind="sqlEditor.results.rows.length"></strong> of 
+                                </span>
+                                <strong ng-bind="sqlEditor.results.rowCount"></strong> total rows.
+                            </span>
+                            <span class="text-muted small" ng-bind="'Took ' + sqlEditor.results.executionTime + 'ms'"></span>
+                        </div>
+                        
+                        <div class="table-responsive sql-table-container" ng-if="sqlEditor.results.rows.length > 0">
+                            <table class="table table-bordered table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th ng-repeat="col in sqlEditor.results.columns" ng-bind="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="row in sqlEditor.results.rows">
+                                        <td class="text-center" ng-bind="$index + 1"></td>
+                                        <td ng-repeat="col in sqlEditor.results.columns" ng-bind="row[col]"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="executeQuery()" ng-disabled="sqlEditor.isLoading">
+                    <i class="fas me-1" ng-class="{'fa-play': !sqlEditor.isLoading, 'fa-spinner fa-spin': sqlEditor.isLoading}"></i>
+                    <span ng-if="!sqlEditor.isLoading">Execute Query</span>
+                    <span ng-if="sqlEditor.isLoading">Executing...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

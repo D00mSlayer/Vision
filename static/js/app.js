@@ -1,154 +1,238 @@
-// Vision App AngularJS Application
 angular.module('visionApp', [])
-.controller('MainController', ['$scope', '$http', '$interval', function($scope, $http, $interval) {
-    // Initialize scope variables
+.controller('MainController', ['$scope', '$http', '$interval', '$location', function($scope, $http, $interval, $location) {
+    
+    $scope.config = {};
     $scope.environmentData = {};
     $scope.healthStatus = {};
-    $scope.loading = true;
-    $scope.error = null;
-    $scope.refreshing = false;
-    $scope.lastUpdated = new Date();
-    
-    // Initialize bookmarks variables
     $scope.bookmarks = [];
     $scope.filteredBookmarks = [];
+    $scope.loading = true;
     $scope.bookmarksLoading = false;
-    $scope.searchQuery = '';
+    $scope.refreshing = false;
+    $scope.error = null;
+    $scope.lastUpdated = new Date();
+    $scope.currentView = 'environments';
     $scope.previewMode = false;
-    
-    // Bookmarks functionality
-    $scope.currentView = 'environments'; // Default to environments view
-    
-    // Load environment data
-    function loadEnvironmentData() {
-        $scope.loading = true;
-        $scope.error = null;
+    let autoScrollInterval = null;
+
+    $scope.activeSqlDb = null;
+    $scope.sqlEditor = {
+        query: '',
+        results: null,
+        error: null,
+        isLoading: false
+    };
+    let sqlEditorModal = null;
+
+    // =================================================================
+    // DATA LOADING
+    // =================================================================
+    const loadDashboardData = function() {
+        return $http.get('/api/dashboard_data').then(function(response) {
+            $scope.environmentData = response.data.environments;
+            $scope.healthStatus = response.data.health;
+            $scope.lastUpdated = new Date();
+            $scope.loading = false;
+            $scope.refreshing = false;
+        }).catch(function(err) {
+            $scope.error = 'Failed to load dashboard data.';
+            $scope.loading = false;
+            $scope.refreshing = false;
+            console.error('Dashboard data load error:', err);
+        });
+    };
+
+    const loadEnvironmentData = function() {
+        $http.get('/api/environments').then(function(response) {
+            $scope.environmentData = response.data;
+            $scope.loading = false;
+        }).catch(function(err) {
+            $scope.error = 'Failed to load environment data.';
+            $scope.loading = false;
+            console.error('Environment load error:', err);
+        });
+    };
+
+    const loadHealthStatus = function() {
+        $http.get('/api/health').then(function(response) {
+            $scope.healthStatus = response.data;
+            $scope.lastUpdated = new Date();
+            $scope.refreshing = false;
+        }).catch(function(err) {
+            console.error('Health status load error:', err);
+            $scope.refreshing = false;
+        });
+    };
+
+    const loadBookmarks = function() {
+        $scope.bookmarksLoading = true;
+        $http.get('/api/bookmarks').then(function(response) {
+            $scope.bookmarks = response.data.bookmarks || [];
+            $scope.filteredBookmarks = $scope.bookmarks;
+            $scope.bookmarksLoading = false;
+        }).catch(function(err) {
+            console.error('Bookmarks load error:', err);
+            $scope.bookmarksLoading = false;
+        });
+    };
+
+    // =================================================================
+    // SQL EDITOR MANAGEMENT (ADD THIS ENTIRE SECTION)
+    // =================================================================
+    $scope.openSqlEditor = function(database) {
+        $scope.activeSqlDb = database;
+
+        $scope.sqlEditor.results = null;
+        $scope.sqlEditor.error = null;
+        $scope.sqlEditor.isLoading = false;
         
-        $http.get('/api/environments')
-            .then(function(response) {
-                $scope.environmentData = response.data;
-                $scope.loading = false;
-                $scope.lastUpdated = new Date();
-                console.log('Environment data loaded:', response.data);
-            })
-            .catch(function(error) {
-                $scope.error = 'Failed to load environment data';
-                $scope.loading = false;
-                console.error('Error loading environment data:', error);
-            });
-    }
+        $scope.sqlEditor.query = 'SELECT TOP 100 name, create_date, modify_date\nFROM sys.tables\nORDER BY modify_date DESC;';
+
+        if (!sqlEditorModal) {
+            sqlEditorModal = new bootstrap.Modal(document.getElementById('sqlEditorModal'));
+        }
+        sqlEditorModal.show();
+    };
+
+    $scope.executeQuery = function() {
+        if (!$scope.activeSqlDb || !$scope.sqlEditor.query) {
+            return;
+        }
+
+        $scope.sqlEditor.isLoading = true;
+        $scope.sqlEditor.results = null;
+        $scope.sqlEditor.error = null;
+        const startTime = new Date().getTime();
+
+        const payload = {
+            db_config: $scope.activeSqlDb,
+            query: $scope.sqlEditor.query
+        };
+
+        $http.post('/api/db/execute', payload).then(function(response) {
+            const data = response.data;
+            if (data.success) {
+                $scope.sqlEditor.results = data;
+                $scope.sqlEditor.results.executionTime = new Date().getTime() - startTime;
+                
+                $scope.sqlEditor.query = data.executedQuery;
+
+            } else {
+                $scope.sqlEditor.error = data.error;
+                if (data.executedQuery) {
+                    $scope.sqlEditor.query = data.executedQuery;
+                }
+            }
+            $scope.sqlEditor.isLoading = false;
+        }).catch(function(err) {
+            $scope.sqlEditor.error = err.data.error || 'A server error occurred.';
+            $scope.sqlEditor.isLoading = false;
+        });
+    };
+
+    // =================================================================
+    // FULLSCREEN MANAGEMENT
+    // =================================================================
+    const enterFullScreen = function() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        }
+    };
+
+    const exitFullScreen = function() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+    };
+
     
-    // Load health status
-    function loadHealthStatus() {
-        $http.get('/api/health')
-            .then(function(response) {
-                $scope.healthStatus = response.data;
-                console.log('Health status updated:', response.data);
-            })
-            .catch(function(error) {
-                console.error('Error loading health status:', error);
+    document.addEventListener('fullscreenchange', function() {
+        if (!document.fullscreenElement) {
+            $scope.$apply(function() {
+                if ($scope.previewMode) {
+                    $scope.setViewMode('detailed');
+                }
             });
-    }
-    
-    // Get health status class for styling
+        }
+    });
+
+    // =================================================================
+    // HEALTH STATUS HELPERS
+    // =================================================================
     $scope.getHealthClass = function(key) {
         if (!$scope.healthStatus.hasOwnProperty(key)) {
-            return 'health-checking';
+            return 'fas fa-spinner fa-spin health-checking';
         }
-        return $scope.healthStatus[key] ? 'health-up' : 'health-down';
+        return 'fas fa-circle ' + ($scope.healthStatus[key] ? 'health-up' : 'health-down');
     };
-    
-    // Get health status text
+
     $scope.getHealthText = function(key) {
         if (!$scope.healthStatus.hasOwnProperty(key)) {
-            return 'Checking...';
+            return '';
         }
         return $scope.healthStatus[key] ? 'Online' : 'Offline';
     };
-    
-    // Build microservice URL with port for clickable links
+
     $scope.getMicroserviceUrlWithPort = function(serverUrl, port) {
         try {
             const url = new URL(serverUrl);
             return `${url.protocol}//${url.hostname}:${port}${url.pathname}`;
         } catch (e) {
-            // Fallback to original URL if parsing fails
             return serverUrl;
         }
     };
+
+    // =================================================================
+    // VIEW MANAGEMENT & ACTIONS
+    // =================================================================
+    $scope.setView = function(view) {
+        $scope.currentView = view;
+
+        if (view !== 'environments') {
+            stopAutoScroll();
+            exitFullScreen();
+        }
+
+        if (view === 'bookmarks' && $scope.bookmarks.length === 0) {
+            loadBookmarks();
+        }
+    };
     
-    // Refresh health status manually
+    $scope.setViewMode = function(mode) {
+        $scope.previewMode = (mode === 'monitor');
+        if ($scope.previewMode) {
+            enterFullScreen();
+            startAutoScroll();
+        } else {
+            exitFullScreen();
+            stopAutoScroll();
+        }
+    };
+
     $scope.refreshHealth = function() {
         $scope.refreshing = true;
-        
-        $http.get('/api/health/check')
-            .then(function(response) {
-                $scope.healthStatus = response.data.health;
-                $scope.lastUpdated = new Date();
-                $scope.refreshing = false;
-                console.log('Health status refreshed:', response.data);
-            })
-            .catch(function(error) {
-                console.error('Error refreshing health status:', error);
-                $scope.refreshing = false;
-            });
+        loadDashboardData();
     };
-    
-    // Set view mode for environments
-    $scope.setViewMode = function(mode) {
-        $scope.previewMode = mode === 'monitor';
-        
-        // Start auto-scroll when entering monitor mode
-        if ($scope.previewMode) {
-            $scope.startAutoScroll();
-        } else {
-            $scope.stopAutoScroll();
-        }
-    };
-    
-    // Toggle preview mode (kept for backwards compatibility)
-    $scope.togglePreviewMode = function() {
-        $scope.setViewMode($scope.previewMode ? 'detailed' : 'monitor');
-    };
-    
-    // Auto-scroll functionality for monitor display
-    $scope.autoScrollInterval = null;
-    
-    $scope.startAutoScroll = function() {
-        $scope.stopAutoScroll(); // Clear any existing interval
-        
-        $scope.autoScrollInterval = $interval(function() {
-            // Smooth scroll down
-            window.scrollBy({
-                top: window.innerHeight * 0.8,
-                behavior: 'smooth'
-            });
-            
-            // Reset to top when reaching bottom
-            setTimeout(function() {
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                }
-            }, 1000);
-        }, 8000); // Scroll every 8 seconds
-    };
-    
-    $scope.stopAutoScroll = function() {
-        if ($scope.autoScrollInterval) {
-            $interval.cancel($scope.autoScrollInterval);
-            $scope.autoScrollInterval = null;
-        }
-    };
-    
-    // Clean up on destroy
-    $scope.$on('$destroy', function() {
-        $scope.stopAutoScroll();
-    });
-    
-    // Calculate overall statistics for monitor display
+
+    // =================================================================
+    // DASHBOARD CALCULATION HELPERS (ADD THIS ENTIRE SECTION)
+    // =================================================================
+
     $scope.getOverallStats = function() {
         let online = 0, offline = 0, total = 0, environments = 0;
         
@@ -160,37 +244,27 @@ angular.module('visionApp', [])
             product.environments.forEach(function(env) {
                 environments++;
                 
-                // Count environment URL
                 const envKey = 'env_' + env.url;
                 if ($scope.healthStatus.hasOwnProperty(envKey)) {
                     total++;
-                    if ($scope.healthStatus[envKey]) online++;
-                    else offline++;
+                    if ($scope.healthStatus[envKey]) online++; else offline++;
                 }
                 
-                // Count microservices
-                if (env.microservices) {
-                    env.microservices.forEach(function(ms) {
-                        const msKey = 'ms_' + ms.server_url;
-                        if ($scope.healthStatus.hasOwnProperty(msKey)) {
-                            total++;
-                            if ($scope.healthStatus[msKey]) online++;
-                            else offline++;
-                        }
-                    });
-                }
+                (env.microservices || []).forEach(function(ms) {
+                    const msKey = 'ms_' + ms.server_url;
+                    if ($scope.healthStatus.hasOwnProperty(msKey)) {
+                        total++;
+                        if ($scope.healthStatus[msKey]) online++; else offline++;
+                    }
+                });
                 
-                // Count databases
-                if (env.databases) {
-                    env.databases.forEach(function(db) {
-                        const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
-                        if ($scope.healthStatus.hasOwnProperty(dbKey)) {
-                            total++;
-                            if ($scope.healthStatus[dbKey]) online++;
-                            else offline++;
-                        }
-                    });
-                }
+                (env.databases || []).forEach(function(db) {
+                    const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
+                    if ($scope.healthStatus.hasOwnProperty(dbKey)) {
+                        total++;
+                        if ($scope.healthStatus[dbKey]) online++; else offline++;
+                    }
+                });
             });
         });
         
@@ -198,123 +272,87 @@ angular.module('visionApp', [])
         return { online, offline, environments, uptime };
     };
     
-    // Calculate health score for a product
     $scope.getProductHealthScore = function(product) {
         let online = 0, total = 0;
         
-        product.environments.forEach(function(env) {
-            // Count environment URL
+        (product.environments || []).forEach(function(env) {
             const envKey = 'env_' + env.url;
             if ($scope.healthStatus.hasOwnProperty(envKey)) {
                 total++;
                 if ($scope.healthStatus[envKey]) online++;
             }
             
-            // Count microservices
-            if (env.microservices) {
-                env.microservices.forEach(function(ms) {
-                    const msKey = 'ms_' + ms.server_url;
-                    if ($scope.healthStatus.hasOwnProperty(msKey)) {
-                        total++;
-                        if ($scope.healthStatus[msKey]) online++;
-                    }
-                });
-            }
+            (env.microservices || []).forEach(function(ms) {
+                const msKey = 'ms_' + ms.server_url;
+                if ($scope.healthStatus.hasOwnProperty(msKey)) {
+                    total++;
+                    if ($scope.healthStatus[msKey]) online++;
+                }
+            });
             
-            // Count databases
-            if (env.databases) {
-                env.databases.forEach(function(db) {
-                    const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
-                    if ($scope.healthStatus.hasOwnProperty(dbKey)) {
-                        total++;
-                        if ($scope.healthStatus[dbKey]) online++;
-                    }
-                });
-            }
+            (env.databases || []).forEach(function(db) {
+                const dbKey = 'db_' + db.host + ':' + db.port + '/' + db.database_name;
+                if ($scope.healthStatus.hasOwnProperty(dbKey)) {
+                    total++;
+                    if ($scope.healthStatus[dbKey]) online++;
+                }
+            });
         });
         
-        return total > 0 ? Math.round((online / total) * 100) : 0;
+        return total > 0 ? Math.round((online / total) * 100) : 100;
     };
-    
-    // View management
-    $scope.setView = function(view) {
-        $scope.currentView = view;
-        
-        if (view === 'bookmarks') {
-            loadBookmarks();
-        } else if (view === 'environments') {
-            // Stop auto-scroll when switching away from monitor mode
-            if (!$scope.previewMode) {
-                $scope.stopAutoScroll();
+
+    // =================================================================
+    // MONITOR MODE AUTO-SCROLL
+    // =================================================================
+    const startAutoScroll = function() {
+        stopAutoScroll();
+        autoScrollInterval = $interval(function() {
+            const isAtBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
+            if (isAtBottom) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const scrollAmount = window.innerHeight * ($scope.config.monitorScrollPercentage || 0.8);
+                window.scrollBy({ top: scrollAmount, behavior: 'smooth' });
             }
+        }, $scope.config.monitorScrollIntervalMs || 8000);
+    };
+
+    const stopAutoScroll = function() {
+        if (autoScrollInterval) {
+            $interval.cancel(autoScrollInterval);
+            autoScrollInterval = null;
         }
     };
-    
-    // Load bookmarks data
-    function loadBookmarks() {
-        $scope.bookmarksLoading = true;
-        
-        $http.get('/api/bookmarks')
-            .then(function(response) {
-                $scope.bookmarks = response.data.bookmarks || [];
-                $scope.filteredBookmarks = $scope.bookmarks;
-                $scope.bookmarksLoading = false;
-                console.log('Bookmarks loaded:', response.data);
-            })
-            .catch(function(error) {
-                console.error('Error loading bookmarks:', error);
-                $scope.bookmarksLoading = false;
-                $scope.bookmarks = [];
-                $scope.filteredBookmarks = [];
-            });
-    }
-    
-    // Search bookmarks with fuzzy matching
-    $scope.searchBookmarks = function() {
-        if (!$scope.searchQuery || $scope.searchQuery.trim() === '') {
-            $scope.filteredBookmarks = $scope.bookmarks;
-            return;
-        }
-        
-        // Use server-side fuzzy search
-        $http.get('/api/bookmarks/search?q=' + encodeURIComponent($scope.searchQuery.trim()))
-            .then(function(response) {
-                $scope.filteredBookmarks = response.data.bookmarks || [];
-                console.log('Search results:', response.data);
-            })
-            .catch(function(error) {
-                console.error('Error searching bookmarks:', error);
-                // Fallback to showing all bookmarks
-                $scope.filteredBookmarks = $scope.bookmarks;
-            });
+
+    $scope.$on('$destroy', stopAutoScroll);
+
+    // =================================================================
+    // APP INITIALIZATION
+    // =================================================================
+    const init = function() {
+        console.log("Initializing Vision Dashboard Controller...");
+
+        $http.get('/api/config').then(function(response) {
+            $scope.config = response.data;
+            console.log(`Polling for dashboard data every ${$scope.config.healthCheckIntervalMs / 1000} seconds.`);
+            
+            $interval(loadDashboardData, $scope.config.healthCheckIntervalMs);
+
+        }).catch(function(err) {
+            console.error("Could not fetch app config. Defaulting to 15s poll interval.", err);
+            $scope.config.healthCheckIntervalMs = 15000;
+            $interval(loadDashboardData, $scope.config.healthCheckIntervalMs);
+        });
+
+        loadDashboardData().then(function() {
+            const params = $location.search();
+            if (params.mode === 'monitor') {
+                console.log("Starting in Monitor Mode via URL parameter.");
+                $scope.setViewMode('monitor');
+            }
+        });
     };
-    
-    // Clear search
-    $scope.clearSearch = function() {
-        $scope.searchQuery = '';
-        $scope.filteredBookmarks = $scope.bookmarks;
-    };
-    
-    // Initialize the application
-    function init() {
-        loadEnvironmentData();
-        loadHealthStatus();
-        
-        // Set up automatic health status updates every 10 seconds (faster updates)
-        $interval(function() {
-            loadHealthStatus();
-        }, 10000);
-        
-        // Initialize bookmarks variables to ensure they exist
-        $scope.bookmarks = [];
-        $scope.filteredBookmarks = [];
-        $scope.bookmarksLoading = false;
-        $scope.searchQuery = '';
-    }
-    
-    // Start the application
+
     init();
-    
-    // Load bookmarks immediately on app start
-    loadBookmarks();
 }]);

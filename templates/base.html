@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="visionApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision - Environment Information</title>
+
+    <link rel="icon" type="image/svg+xml" href="{[ url_for('static', filename='favicon.svg') ]}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{[ url_for('static', filename='css/styles.css') ]}" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body ng-controller="MainController">
+    <nav class="navbar navbar-dark bg-primary mb-4" ng-hide="previewMode">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-eye me-2"></i>Vision - Developer Dashboard
+            </span>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-light text-dark">
+                    <i class="fas fa-clock me-1"></i>Last Updated: <span ng-bind="lastUpdated | date:'medium'"></span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <ul class="nav nav-tabs mb-4" ng-hide="previewMode">
+            <li class="nav-item">
+                <a class="nav-link" 
+                   ng-class="{'active': currentView === 'environments'}" 
+                   ng-click="setView('environments')" 
+                   href="#">
+                    Environments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" 
+                   ng-class="{'active': currentView === 'bookmarks'}" 
+                   ng-click="setView('bookmarks')" 
+                   href="#">
+                    Bookmarks
+                </a>
+            </li>
+        </ul>
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{[ url_for('static', filename='js/app.js') ]}"></script>
+</body>
+</html>
