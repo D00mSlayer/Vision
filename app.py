@@ -6,6 +6,10 @@ import pyodbc
 import re
 import threading
 import time
+import socket
+import redis
+import pymemcache
+import pika
 from flask import Flask, render_template, jsonify, request
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -76,6 +80,71 @@ def check_database_health(db_config):
         app.logger.error(f"An unexpected error occurred during pyodbc check for {db_config['host']}: {e}")
         return False
 
+def check_redis_health(redis_config):
+    """Checks if a Redis server is reachable."""
+    if not redis_config or not redis_config.get('host'):
+        return False
+
+    try:
+        client = redis.Redis(
+            host=redis_config['host'],
+            port=redis_config.get('port', 6379),
+            db=redis_config.get('database', 0),
+            password=redis_config.get('password'),
+            socket_connect_timeout=5,
+            socket_timeout=5,
+            decode_responses=True
+        )
+        client.ping()
+        return True
+    except Exception as e:
+        app.logger.debug(f"Redis health check failed for {redis_config['host']}:{redis_config.get('port', 6379)}: {e}")
+        return False
+
+def check_memcached_health(memcached_config):
+    """Checks if a Memcached server is reachable."""
+    if not memcached_config or not memcached_config.get('host'):
+        return False
+
+    try:
+        client = pymemcache.Client(
+            (memcached_config['host'], memcached_config.get('port', 11211)),
+            timeout=5,
+            connect_timeout=5
+        )
+        client.stats()
+        client.close()
+        return True
+    except Exception as e:
+        app.logger.debug(f"Memcached health check failed for {memcached_config['host']}:{memcached_config.get('port', 11211)}: {e}")
+        return False
+
+def check_rabbitmq_health(rabbitmq_config):
+    """Checks if a RabbitMQ server is reachable."""
+    if not rabbitmq_config or not rabbitmq_config.get('host'):
+        return False
+
+    try:
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=rabbitmq_config['host'],
+                port=rabbitmq_config.get('port', 5672),
+                virtual_host=rabbitmq_config.get('vhost', '/'),
+                credentials=pika.PlainCredentials(
+                    rabbitmq_config.get('username', 'guest'),
+                    rabbitmq_config.get('password', 'guest')
+                ),
+                connection_attempts=2,
+                retry_delay=1,
+                socket_timeout=5
+            )
+        )
+        connection.close()
+        return True
+    except Exception as e:
+        app.logger.debug(f"RabbitMQ health check failed for {rabbitmq_config['host']}:{rabbitmq_config.get('port', 5672)}: {e}")
+        return False
+
 def run_all_health_checks():
     """Gathers all services from YAML, de-duplicates them, and runs checks in parallel."""
     app.logger.info("Starting a new health check cycle...")
@@ -104,6 +173,20 @@ def run_all_health_checks():
                 key = f"db_{db['host']}:{db['port']}/{db['database_name']}"
                 if key not in unique_checks:
                     unique_checks[key] = ('database', db)
+            
+            # Add caching services health checks
+            for cache in env.get('caching_services', []):
+                service_type = cache.get('service_type', 'unknown')
+                key = f"cache_{service_type}_{cache['host']}:{cache.get('port', 6379 if service_type == 'redis' else 11211)}"
+                if key not in unique_checks:
+                    unique_checks[key] = (f'cache_{service_type}', cache)
+            
+            # Add message queue health checks
+            for queue in env.get('message_queues', []):
+                service_type = queue.get('service_type', 'unknown')
+                key = f"queue_{service_type}_{queue['host']}:{queue.get('port', 5672)}"
+                if key not in unique_checks:
+                    unique_checks[key] = (f'queue_{service_type}', queue)
 
     if not unique_checks:
         app.logger.info("No unique services found to check.")
@@ -117,6 +200,14 @@ def run_all_health_checks():
                 future = executor.submit(check_url_health, data)
             elif check_type == 'database':
                 future = executor.submit(check_database_health, data)
+            elif check_type == 'cache_redis':
+                future = executor.submit(check_redis_health, data)
+            elif check_type == 'cache_memcached':
+                future = executor.submit(check_memcached_health, data)
+            elif check_type == 'queue_rabbitmq':
+                future = executor.submit(check_rabbitmq_health, data)
+            else:
+                continue
             future_to_key[future] = key
 
         for future in as_completed(future_to_key):

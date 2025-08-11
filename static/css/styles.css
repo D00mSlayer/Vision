@@ -507,6 +507,100 @@ a:hover {
     margin-top: 0.5rem;
 }
 
+.cache-health-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.cache-health-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 4px;
+    font-size: 0.85em;
+    flex: 1;
+    min-width: 120px;
+}
+
+.cache-indicator {
+    margin-right: 6px;
+    font-size: 0.7em;
+}
+
+.cache-label {
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.cache-host {
+    color: rgba(108, 117, 125, 0.7);
+    margin-left: auto;
+}
+
+.queue-health-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.queue-health-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    background: rgba(13, 202, 240, 0.1);
+    border: 1px solid rgba(13, 202, 240, 0.3);
+    border-radius: 4px;
+    font-size: 0.85em;
+    flex: 1;
+    min-width: 120px;
+}
+
+.queue-indicator {
+    margin-right: 6px;
+    font-size: 0.7em;
+}
+
+.queue-label {
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.queue-host {
+    color: rgba(108, 117, 125, 0.7);
+    margin-left: auto;
+}
+
+/* Caching Service Indicators */
+.caching-indicators {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.cache-section {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+/* Message Queue Indicators */
+.queue-indicators {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.queue-section {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
 .db-health-item {
     background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
     border: 1px solid #dee2e6;

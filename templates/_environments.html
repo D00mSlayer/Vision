@@ -94,6 +94,34 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="caching-indicators" ng-if="environment.caching_services && environment.caching_services.length > 0">
+                                <div class="cache-section mb-2">
+                                    <i class="fas fa-memory text-muted me-2"></i>
+                                    <span class="text-muted">{{ environment.caching_services.length }} Cache Service{{ environment.caching_services.length > 1 ? 's' : '' }}</span>
+                                </div>
+                                <div class="cache-health-grid">
+                                    <div ng-repeat="cache in environment.caching_services" class="cache-health-item">
+                                        <i class="fas fa-circle cache-indicator" ng-class="getHealthClass('cache_' + cache.service_type + '_' + cache.host + ':' + (cache.port || (cache.service_type === 'redis' ? 6379 : 11211)))"></i>
+                                        <span class="cache-label">{{ cache.service_type | uppercase }}</span>
+                                        <small class="cache-host">{{ cache.host }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="queue-indicators" ng-if="environment.message_queues && environment.message_queues.length > 0">
+                                <div class="queue-section mb-2">
+                                    <i class="fas fa-stream text-muted me-2"></i>
+                                    <span class="text-muted">{{ environment.message_queues.length }} Message Queue{{ environment.message_queues.length > 1 ? 's' : '' }}</span>
+                                </div>
+                                <div class="queue-health-grid">
+                                    <div ng-repeat="queue in environment.message_queues" class="queue-health-item">
+                                        <i class="fas fa-circle queue-indicator" ng-class="getHealthClass('queue_' + queue.service_type + '_' + queue.host + ':' + (queue.port || 5672))"></i>
+                                        <span class="queue-label">{{ queue.service_type | uppercase }}</span>
+                                        <small class="queue-host">{{ queue.host }}</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -266,6 +294,60 @@
                                                                 <strong>Tag:</strong> 
                                                                 <span class="badge bg-success">{{ ms.git_tag }}</span>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="environment.caching_services && environment.caching_services.length > 0" class="mb-3">
+                                        <h6><i class="fas fa-memory me-2"></i>Caching Services</h6>
+                                        <div class="row">
+                                            <div ng-repeat="cache in environment.caching_services" class="col-md-6 mb-2">
+                                                <div class="card border-warning">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">
+                                                            <span class="badge bg-warning text-dark">{{ cache.service_type | uppercase }}</span>
+                                                            <span class="ms-2">
+                                                                <i class="fas fa-circle" 
+                                                                   ng-class="getHealthClass('cache_' + cache.service_type + '_' + cache.host + ':' + (cache.port || (cache.service_type === 'redis' ? 6379 : 11211)))"></i>
+                                                                {{ getHealthText('cache_' + cache.service_type + '_' + cache.host + ':' + (cache.port || (cache.service_type === 'redis' ? 6379 : 11211))) }}
+                                                            </span>
+                                                        </h6>
+                                                        <div class="small">
+                                                            <div><strong>Host:</strong> {{ cache.host }}</div>
+                                                            <div><strong>Port:</strong> {{ cache.port || (cache.service_type === 'redis' ? 6379 : 11211) }}</div>
+                                                            <div ng-if="cache.database"><strong>Database:</strong> {{ cache.database }}</div>
+                                                            <div ng-if="cache.description" class="text-muted"><strong>Description:</strong> {{ cache.description }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div ng-if="environment.message_queues && environment.message_queues.length > 0" class="mb-3">
+                                        <h6><i class="fas fa-stream me-2"></i>Message Queues</h6>
+                                        <div class="row">
+                                            <div ng-repeat="queue in environment.message_queues" class="col-md-6 mb-2">
+                                                <div class="card border-info">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">
+                                                            <span class="badge bg-info">{{ queue.service_type | uppercase }}</span>
+                                                            <span class="ms-2">
+                                                                <i class="fas fa-circle" 
+                                                                   ng-class="getHealthClass('queue_' + queue.service_type + '_' + queue.host + ':' + (queue.port || 5672))"></i>
+                                                                {{ getHealthText('queue_' + queue.service_type + '_' + queue.host + ':' + (queue.port || 5672)) }}
+                                                            </span>
+                                                        </h6>
+                                                        <div class="small">
+                                                            <div><strong>Host:</strong> {{ queue.host }}</div>
+                                                            <div><strong>Port:</strong> {{ queue.port || 5672 }}</div>
+                                                            <div ng-if="queue.vhost"><strong>Virtual Host:</strong> {{ queue.vhost }}</div>
+                                                            <div ng-if="queue.username"><strong>Username:</strong> {{ queue.username }}</div>
+                                                            <div ng-if="queue.management_port"><strong>Management Port:</strong> {{ queue.management_port }}</div>
+                                                            <div ng-if="queue.description" class="text-muted"><strong>Description:</strong> {{ queue.description }}</div>
                                                         </div>
                                                     </div>
                                                 </div>

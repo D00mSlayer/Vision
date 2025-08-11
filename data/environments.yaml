@@ -25,6 +25,26 @@ product_versions:
             database_name: "product_a_dev_db_replica"
             username: "devuser_ro"
             password: "devpassword_ro"
+        caching_services:
+          - service_type: "redis"
+            host: "redis-dev.producta.com"
+            port: 6379
+            database: 0
+            password: "dev_redis_password"
+            description: "Main caching layer for sessions and API responses"
+          - service_type: "memcached"
+            host: "memcached-dev.producta.com"
+            port: 11211
+            description: "Fast object caching for database queries"
+        message_queues:
+          - service_type: "rabbitmq"
+            host: "rabbitmq-dev.producta.com"
+            port: 5672
+            vhost: "/"
+            username: "dev_rabbit_user"
+            password: "dev_rabbit_pass"
+            management_port: 15672
+            description: "Message queue for async processing"
         microservices:
           - name_of_service: "UserAuthService"
             server_url: "https://auth.dev.producta.com"
@@ -53,6 +73,26 @@ product_versions:
             database_name: "product_a_stg_db"
             username: "stguser"
             password: "stgpassword"
+        caching_services:
+          - service_type: "redis"
+            host: "redis-stg.producta.com"
+            port: 6379
+            database: 0
+            password: "stg_redis_password"
+            description: "Staging caching layer"
+          - service_type: "memcached"
+            host: "memcached-stg.producta.com"
+            port: 11211
+            description: "Staging object caching"
+        message_queues:
+          - service_type: "rabbitmq"
+            host: "rabbitmq-stg.producta.com"
+            port: 5672
+            vhost: "/"
+            username: "stg_rabbit_user"
+            password: "stg_rabbit_pass"
+            management_port: 15672
+            description: "Staging message queue"
         microservices:
           - name_of_service: "UserAuthService"
             server_url: "https://auth.stg.producta.com"
@@ -87,6 +127,26 @@ product_versions:
             database_name: "product_a_prod_db"
             username: "produser_ro"
             password: "prodpassword_ro"
+        caching_services:
+          - service_type: "redis"
+            host: "redis-prod.producta.com"
+            port: 6379
+            database: 0
+            password: "prod_redis_password"
+            description: "Production caching cluster"
+          - service_type: "memcached"
+            host: "memcached-prod.producta.com"
+            port: 11211
+            description: "Production object caching"
+        message_queues:
+          - service_type: "rabbitmq"
+            host: "rabbitmq-prod.producta.com"
+            port: 5672
+            vhost: "/"
+            username: "prod_rabbit_user"
+            password: "prod_rabbit_pass"
+            management_port: 15672
+            description: "Production message queue cluster"
         microservices:
           - name_of_service: "UserAuthService"
             server_url: "https://auth.producta.com"
@@ -117,6 +177,26 @@ product_versions:
             database_name: "product_b_dev_db"
             username: "devuser"
             password: "devpassword"
+        caching_services:
+          - service_type: "redis"
+            host: "redis-dev.productb.com"
+            port: 6379
+            database: 1
+            password: "dev_redis_password_b"
+            description: "Product B dev caching"
+          - service_type: "memcached"
+            host: "memcached-dev.productb.com"
+            port: 11211
+            description: "Product B dev object caching"
+        message_queues:
+          - service_type: "rabbitmq"
+            host: "rabbitmq-dev.productb.com"
+            port: 5672
+            vhost: "/productb"
+            username: "dev_rabbit_user_b"
+            password: "dev_rabbit_pass_b"
+            management_port: 15672
+            description: "Product B dev message queue"
         microservices:
           - name_of_service: "PaymentService"
             server_url: "https://payments.dev.productb.com"
