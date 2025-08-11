@@ -515,15 +515,24 @@ a:hover {
 }
 
 .cache-health-item {
+    background: linear-gradient(145deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffd43b;
+    border-radius: 12px;
+    padding: 0.4rem 0.7rem;
     display: flex;
-    align-items: center;
-    padding: 4px 8px;
-    background: rgba(255, 193, 7, 0.1);
-    border: 1px solid rgba(255, 193, 7, 0.3);
-    border-radius: 4px;
-    font-size: 0.85em;
-    flex: 1;
-    min-width: 120px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 140px;
+    max-width: 200px;
+}
+
+.cache-health-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .cache-indicator {
@@ -533,12 +542,17 @@ a:hover {
 
 .cache-label {
     font-weight: 500;
-    margin-right: 4px;
+    color: #856404;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .cache-host {
-    color: rgba(108, 117, 125, 0.7);
-    margin-left: auto;
+    color: #6c757d;
+    font-size: 0.7rem;
+    word-break: break-all;
+    line-height: 1.2;
 }
 
 .queue-health-grid {
@@ -549,15 +563,24 @@ a:hover {
 }
 
 .queue-health-item {
+    background: linear-gradient(145deg, #cff4fc 0%, #b6effb 100%);
+    border: 1px solid #0dcaf0;
+    border-radius: 12px;
+    padding: 0.4rem 0.7rem;
     display: flex;
-    align-items: center;
-    padding: 4px 8px;
-    background: rgba(13, 202, 240, 0.1);
-    border: 1px solid rgba(13, 202, 240, 0.3);
-    border-radius: 4px;
-    font-size: 0.85em;
-    flex: 1;
-    min-width: 120px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 140px;
+    max-width: 200px;
+}
+
+.queue-health-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .queue-indicator {
@@ -567,12 +590,17 @@ a:hover {
 
 .queue-label {
     font-weight: 500;
-    margin-right: 4px;
+    color: #055160;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
 }
 
 .queue-host {
-    color: rgba(108, 117, 125, 0.7);
-    margin-left: auto;
+    color: #6c757d;
+    font-size: 0.7rem;
+    word-break: break-all;
+    line-height: 1.2;
 }
 
 /* Caching Service Indicators */
