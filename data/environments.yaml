@@ -33,9 +33,9 @@ product_versions:
             password: "dev_redis_password"
             description: "Main caching layer for sessions and API responses"
           - service_type: "memcached"
-            host: "memcached-dev.producta.com"
-            port: 11211
-            description: "Fast object caching for database queries"
+            host: "poclptecache1.company.loc"
+            port: 5551
+            description: "Enterprise Memcached server for application caching"
         message_queues:
           - service_type: "rabbitmq"
             host: "rabbitmq-dev.producta.com"

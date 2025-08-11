@@ -107,14 +107,17 @@ def check_memcached_health(memcached_config):
         return False
 
     try:
-        client = pymemcache.Client(
+        # Use base client for more reliable connection handling
+        client = pymemcache.client.base.Client(
             (memcached_config['host'], memcached_config.get('port', 11211)),
-            timeout=5,
-            connect_timeout=5
+            timeout=3,
+            connect_timeout=3,
+            no_delay=True
         )
-        client.stats()
+        # Try to get server stats - this is a lightweight operation
+        stats = client.stats()
         client.close()
-        return True
+        return stats is not None
     except Exception as e:
         app.logger.debug(f"Memcached health check failed for {memcached_config['host']}:{memcached_config.get('port', 11211)}: {e}")
         return False
